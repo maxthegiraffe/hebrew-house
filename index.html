@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hebrew House</title>
+<meta name="description" content="The best Hebrew house on earth. Nine continuous sets and the original songs.">
+<meta property="og:title" content="Hebrew House">
+<meta property="og:description" content="The best Hebrew house on earth. Nine continuous sets and the original songs.">
+<meta property="og:type" content="music.playlist">
+<meta property="og:url" content="https://hebrew.house/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Libre+Bodoni:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0f0d0b; --panel:#1a1613; --panel2:#221c18;
+    --ink:#f5efe6; --muted:#a1948a; --line:#332a24;
+    --accent:#e8825a; --accent2:#f0b429;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:'Space Grotesk',system-ui,-apple-system,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--accent)}
+  .wrap{max-width:720px;margin:0 auto;padding:32px 20px 80px}
+  header{padding:28px 0 8px;border-bottom:1px solid var(--line);margin-bottom:28px}
+  h1{
+    font-family:'Libre Bodoni',Georgia,serif; font-weight:400;
+    font-size:clamp(34px,8vw,52px); line-height:1.05; margin:0 0 10px;
+  }
+  h1 em{font-style:italic;color:var(--accent)}
+  .date{color:var(--muted);font-size:14px;letter-spacing:.04em;text-transform:uppercase}
+  .lede{color:var(--muted);font-size:15px;line-height:1.6;margin:14px 0 0}
+
+  .round{
+    display:flex;align-items:center;gap:12px;margin:8px 0 24px;
+  }
+  .round-label{
+    font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent2);
+    white-space:nowrap;
+  }
+  .round-rule{flex:1;height:1px;background:var(--line)}
+
+  .vibe{margin:0 0 30px}
+  .vibe-head{display:flex;align-items:baseline;gap:10px;margin:0 0 12px;flex-wrap:wrap}
+  .vibe-name{font-family:'Libre Bodoni',Georgia,serif;font-size:21px;font-weight:600;margin:0}
+  .vibe-tag{
+    font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+    border:1px solid var(--line);border-radius:999px;padding:3px 9px;
+  }
+  .vibe-note{color:var(--muted);font-size:14px;line-height:1.55;margin:0 0 14px}
+
+  .track{
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:14px 16px;margin:0 0 10px;
+  }
+  .track.primary{background:var(--panel2);border-color:#4a3a2e}
+  .track-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+  .track-title{font-weight:500;font-size:16px;flex:1;min-width:0}
+  .take{
+    font-size:11px;color:var(--muted);border:1px solid var(--line);
+    border-radius:999px;padding:2px 8px;white-space:nowrap;
+  }
+  .take.pick{color:var(--accent2);border-color:#5c4620}
+  .dur{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+  audio{width:100%;height:36px;display:block}
+  .heart{
+    background:none;border:1px solid var(--line);color:var(--muted);
+    border-radius:999px;width:32px;height:32px;cursor:pointer;font-size:14px;
+    line-height:1;transition:.15s;flex:none;
+  }
+  .heart:hover{border-color:var(--accent)}
+  .heart.on{background:var(--accent);border-color:var(--accent);color:#fff}
+
+  footer{
+    margin-top:44px;padding-top:20px;border-top:1px solid var(--line);
+    color:var(--muted);font-size:13px;line-height:1.7;
+  }
+  .mix{
+    background:linear-gradient(160deg,#2a1f18,#1a1613);
+    border:1px solid #4a3a2e;border-radius:18px;padding:22px 20px;margin:0 0 34px;
+  }
+  .mix-eyebrow{
+    font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent2);
+    margin-bottom:8px;
+  }
+  .mix-title{
+    font-family:'Libre Bodoni',Georgia,serif;font-weight:400;font-style:italic;
+    font-size:clamp(24px,6vw,32px);margin:0 0 10px;color:var(--ink);
+  }
+  .mix-note{color:var(--muted);font-size:14px;line-height:1.6;margin:0 0 16px}
+  .mix-list{
+    list-style:none;counter-reset:m;padding:0;margin:18px 0 0;
+    border-top:1px solid var(--line);
+  }
+  .mix-list li{
+    counter-increment:m;display:flex;align-items:baseline;gap:10px;
+    padding:8px 0;border-bottom:1px solid var(--line);font-size:14px;color:var(--muted);
+  }
+  .mix-list li::before{
+    content:counter(m);font-variant-numeric:tabular-nums;color:#6b5d53;
+    font-size:12px;min-width:16px;
+  }
+  .mix-list li span{margin-left:auto;font-variant-numeric:tabular-nums;font-size:13px}
+  .mix-list li.peak{color:var(--accent2)}
+  .mix-list li.peak::after{
+    content:'peak';font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+    border:1px solid #5c4620;border-radius:999px;padding:2px 7px;margin-left:10px;
+  }
+  @media (max-width:520px){ .wrap{padding:20px 16px 64px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="date">Nine sets · the originals</div>
+  <h1>Hebrew <em>House</em></h1>
+  <p class="lede">The best Hebrew house on earth. Oud, darbuka, kanun and Hebrew choir over house, from the deep and the slow to Yemenite fire and a lullaby to fall asleep to. Press play on any set, it runs continuous.</p>
+</header>
+
+<section class="mix" style="border-color:#6a4a2e">
+  <div class="mix-eyebrow">16 tracks · 52:24</div>
+  <h2 class="mix-title">The Set</h2>
+  <p class="mix-note">One continuous journey, every track at 126 BPM in A minor. Oud, darbuka, Hebrew choir and four-on-the-floor, beatmatched end to end.</p>
+  <audio controls preload="none" src="https://maxthegiraffe.github.io/grateful-audio/hebrew-house-set.mp3"></audio>
+  <ol class="mix-list">
+    <li>Petach HaLev <span>4:08</span></li>
+    <li>Or Al HaMayim <span>3:54</span></li>
+    <li>Tzel Achar HaTzohorayim <span>3:32</span></li>
+    <li>Desert Brass Pulse <span>3:26</span></li>
+    <li>Desert Lantern Groove <span>3:52</span></li>
+    <li>Kavod Loop <span>3:11</span></li>
+    <li>Kivun Acher <span>3:12</span></li>
+    <li>Kav Kesher <span>3:10</span></li>
+    <li>Esh Av Echad <span>3:36</span></li>
+    <li>Sanctuary Pulse <span>4:18</span></li>
+    <li>Shaar HaNefesh <span>3:34</span></li>
+    <li>Neshamot Hall <span>3:39</span></li>
+    <li>Lech Imi <span>3:24</span></li>
+    <li class="peak">Etzem VeTof <span>3:14</span></li>
+    <li>Kesher Vibe <span>3:34</span></li>
+    <li>Birkat Acharon HaYotze <span>3:29</span></li>
+  </ol>
+</section>
+
+<section class="mix" style="border-color:#2e6a5c;background:linear-gradient(160deg,#16241f,#111815)">
+  <div class="mix-eyebrow" style="color:#9ad6c4">17 tracks · 61:05</div>
+  <h2 class="mix-title">Hebrew House Deep</h2>
+  <p class="mix-note">Built in the shadow of Petach HaLev: 124 BPM, A minor, sub-forward. It never builds and never drops, it just keeps you there.</p>
+  <audio controls preload="none" src="https://maxthegiraffe.github.io/grateful-audio/hebrew-house-deep.mp3"></audio>
+  <ol class="mix-list">
+    <li>Petach HaLev <span>4:08</span></li>
+    <li>Melech Katan <span>4:06</span></li>
+    <li>Tehom <span>2:59</span></li>
+    <li>Cavernous Pulse <span>3:01</span></li>
+    <li>Lech Iti <span>2:59</span></li>
+    <li>Lev Shokea <span>3:27</span></li>
+    <li>Layla Arokh <span>2:59</span></li>
+    <li>Shnei Tzlilim <span>3:25</span></li>
+    <li>Ash And Honey <span>3:41</span></li>
+    <li>Tzadiq Loop <span>4:06</span></li>
+    <li>Kav HaShemesh <span>3:26</span></li>
+    <li>Kesher Nistar <span>3:54</span></li>
+    <li>Mayim Shchorim <span>4:03</span></li>
+    <li>Ash And Honey II <span>3:37</span></li>
+    <li>Mayim Shchorim II <span>3:44</span></li>
+    <li>Shivtei Or <span>4:27</span></li>
+    <li>Midnight Tefillin <span>7:59</span></li>
+  </ol>
+</section>
+
+<section class="mix" style="border-color:#3f5a7a;background:linear-gradient(160deg,#161d29,#12161c)">
+  <div class="mix-eyebrow" style="color:#8fb4e8">17 tracks · 55:04</div>
+  <h2 class="mix-title">Slow Hebrew House</h2>
+  <p class="mix-note">100 BPM. The same oud, darbuka, kanun, ney and Hebrew choir, half the urgency.</p>
+  <audio controls preload="none" src="https://maxthegiraffe.github.io/grateful-audio/slow-hebrew-house.mp3"></audio>
+  <ol class="mix-list">
+    <li>Amin Hatar <span>3:38</span></li>
+    <li>Tzila Fade B <span>3:31</span></li>
+    <li>Avak Zahav <span>4:07</span></li>
+    <li>Tzila Fade <span>3:46</span></li>
+    <li>Shufled Smoke <span>3:17</span></li>
+    <li>Harbor Strut <span>2:41</span></li>
+    <li>Chol Al HaMayim <span>3:14</span></li>
+    <li>Desert Loom <span>3:24</span></li>
+    <li>Keter Hall <span>3:24</span></li>
+    <li>Ner Echad <span>3:31</span></li>
+    <li>Open the Chapel <span>3:53</span></li>
+    <li>Yadayim Rabot <span>2:43</span></li>
+    <li>Yad BeYad, Kol Echad <span>2:41</span></li>
+    <li class="peak">Etz HaTamar <span>3:14</span></li>
+    <li>Or Zahav <span>4:26</span></li>
+    <li>Or Zahav B <span>3:43</span></li>
+    <li>Avak Zahav B <span>3:55</span></li>
+  </ol>
+</section>
+
+<section class="mix" style="border-color:#7a3a3a;background:linear-gradient(160deg,#2a1618,#1a1214)">
+  <div class="mix-eyebrow" style="color:#e87a7a">18 tracks · 58:39</div>
+  <h2 class="mix-title">Diwan</h2>
+  <p class="mix-note">Yemenite-Mizrahi house, the hardest and fastest set here. 129 BPM rising to 136, ululation, darbuka and riq, acid lines in a Middle Eastern scale, distorted oud.</p>
+  <audio controls preload="none" src="https://maxthegiraffe.github.io/grateful-audio/diwan-full.mp3"></audio>
+  <ol class="mix-list">
+    <li>Salt on the Floor <span>3:33</span></li>
+    <li>Sanaa Loop <span>3:36</span></li>
+    <li>Qamar Loop <span>3:33</span></li>
+    <li>Layla Bli Blamim <span>2:56</span></li>
+    <li>Oumari Fire <span>3:31</span></li>
+    <li>Desert Coil <span>3:40</span></li>
+    <li>Ash Black <span>3:38</span></li>
+    <li>Melek HaBalagan <span>3:27</span></li>
+    <li>Stone Drum Rise <span>4:01</span></li>
+    <li>Desert Pulse <span>4:29</span></li>
+    <li>Desert Pulse B <span>4:19</span></li>
+    <li>Yadayim Al HaTof <span>3:20</span></li>
+    <li class="peak">Katz HaLaila <span>3:16</span></li>
+    <li>قلب في سبأ <span>3:33</span></li>
+    <li>Room Breathes Out <span>3:59</span></li>
+    <li>Room Breathes Out B <span>3:19</span></li>
+    <li>Ner Shel Erev <span>3:32</span></li>
+    <li>Shalom <span>1:28</span></li>
+  </ol>
+</section>
+
+<section class="mix" style="border-color:#7a4a2e;background:linear-gradient(160deg,#2e2016,#1a1512)">
+  <div class="mix-eyebrow" style="color:#e8a55a">19 tracks · 58:31</div>
+  <h2 class="mix-title">Freygish</h2>
+  <p class="mix-note">Everything in Hijaz, the Ahavah Rabbah mode. Hebrew over amapiano, gqom, baile funk, jersey club, Detroit techno and psytrance, ramping from 123 to 136 and back down.</p>
+  <audio controls preload="none" src="https://maxthegiraffe.github.io/grateful-audio/freygish-set.mp3"></audio>
+  <ol class="mix-list">
+    <li>Hollow Caravan <span>4:13</span></li>
+    <li>Mosaic Sand <span>3:23</span></li>
+    <li>Freygish Dunes <span>3:31</span></li>
+    <li>Clay and Cedar <span>3:02</span></li>
+    <li>Dust Over Haifa <span>3:24</span></li>
+    <li>Clay Bowl Night <span>4:01</span></li>
+    <li>Bouzouki Parade <span>2:11</span></li>
+    <li>Broken Brass <span>3:32</span></li>
+    <li>Yahrzeit Loop <span>3:32</span></li>
+    <li>Ani Po <span>3:01</span></li>
+    <li>Safed Drum Circle <span>2:56</span></li>
+    <li>Yalla Lev <span>2:54</span></li>
+    <li>Yahrzeit Loop B <span>3:32</span></li>
+    <li>Bouzouki Sunstrut <span>2:54</span></li>
+    <li>Tof VeShir <span>2:37</span></li>
+    <li>Freygish Pulse B <span>3:19</span></li>
+    <li>Freygish Pulse <span>4:03</span></li>
+    <li class="peak">Esh BaYadayim <span>3:04</span></li>
+    <li>Last Door Open <span>3:54</span></li>
+  </ol>
+</section>
+
+<section class="mix" style="border-color:#5a3a6a;background:linear-gradient(160deg,#241a2a,#161320)">
+  <div class="mix-eyebrow" style="color:#c99ae8">7 tracks · 20:18</div>
+  <h2 class="mix-title">Tehom</h2>
+  <p class="mix-note">Shamanic bass house at 129 BPM. Hebrew chant used as percussion, a halftime drop into Tehom Amuka, the deep abyss, then the room empties.</p>
+  <audio controls preload="none" src="https://maxthegiraffe.github.io/grateful-audio/hebrew-bass-set.mp3"></audio>
+  <ol class="mix-list">
+    <li>Ash Bowl <span>3:58</span></li>
+    <li>Od VeOd <span>2:56</span></li>
+    <li>Desert Incantation <span>3:29</span></li>
+    <li>Tehom Amuka <span>3:14</span></li>
+    <li class="peak">Vav Slam <span>2:10</span></li>
+    <li>Temple Subwave <span>2:59</span></li>
+    <li>Empty Room Fade <span>3:07</span></li>
+  </ol>
+</section>
+
+<section class="mix" style="border-color:#7a6a2e;background:linear-gradient(160deg,#292418,#1a1712)">
+  <div class="mix-eyebrow" style="color:#e8cf7a">18 tracks · 61:34</div>
+  <h2 class="mix-title">Canopée</h2>
+  <p class="mix-note">The bright side. Major keys at 112 BPM: marimba, kalimba, steel drums, flute, whistling, birdsong. The Hebrew is sung like friends rather than a cantor.</p>
+  <audio controls preload="none" src="https://maxthegiraffe.github.io/grateful-audio/canopee.mp3"></audio>
+  <ol class="mix-list">
+    <li>Birkat Erev <span>4:12</span></li>
+    <li>Mafteach Rach <span>3:14</span></li>
+    <li>Golden Tamarind <span>3:18</span></li>
+    <li>Boker Al HaChol <span>2:54</span></li>
+    <li>Ata Sheli <span>2:49</span></li>
+    <li>Ruach Al HaMayim <span>3:41</span></li>
+    <li>Shemesh Al HaDek <span>3:34</span></li>
+    <li>Sivuv BeAnan <span>3:39</span></li>
+    <li>Galei Zahav <span>3:33</span></li>
+    <li>Shemesh Zgugit <span>3:59</span></li>
+    <li>Shemesh Zgugit B <span>3:59</span></li>
+    <li>Or Al HaYam <span>3:03</span></li>
+    <li>Kochav Shel Yam <span>2:55</span></li>
+    <li>Birkat Erev B <span>3:40</span></li>
+    <li class="peak">Little Blue Door <span>3:14</span></li>
+    <li>Or Yored Lat B <span>3:46</span></li>
+    <li>Or Yored Lat <span>4:02</span></li>
+    <li>Tziporim Bagan <span>7:59</span></li>
+  </ol>
+</section>
+
+<section class="mix" style="border-color:#3a5a56;background:linear-gradient(160deg,#16211f,#121818)">
+  <div class="mix-eyebrow" style="color:#8fd0c0">13 tracks · 32:51</div>
+  <h2 class="mix-title">Hebrew House Lofi</h2>
+  <p class="mix-note">The whole sound slowed down. Dusty Rhodes, vinyl crackle, oud over boom-bap, then the drums dissolve into singing bowls, chimes and a final gong.</p>
+  <audio controls preload="none" src="https://maxthegiraffe.github.io/grateful-audio/hebrew-house-lofi.mp3"></audio>
+  <ol class="mix-list">
+    <li>A Minor Haze <span>2:16</span></li>
+    <li>Nylon Hiss Drift <span>1:35</span></li>
+    <li>Distant Humming <span>2:07</span></li>
+    <li>Rain Over A Minor <span>3:04</span></li>
+    <li>Blue Velvet Tehila <span>2:30</span></li>
+    <li class="peak">Ashen Tides <span>3:27</span></li>
+    <li>Shabbat Dust <span>2:10</span></li>
+    <li>Sha'ar HaNeshamah <span>4:04</span></li>
+    <li>Dust in the Palm <span>3:33</span></li>
+    <li>Saffron Bowl <span>3:34</span></li>
+    <li>A Tone Apart <span>3:32</span></li>
+    <li>Stone Bowl Prayer <span>3:54</span></li>
+    <li>Last Gong Fades <span>3:34</span></li>
+  </ol>
+</section>
+
+<section class="mix" data-set="hebrew-house-lofi-night" style="border-color:#4b4560;background:linear-gradient(160deg,#15141b,#0d0c11)">
+  <div class="mix-eyebrow" style="color:#a89ad6">25 tracks · 88:30</div>
+  <h2 class="mix-title">Hebrew House Lofi Night</h2>
+  <p class="mix-note">Built to fall asleep to. Slowed to 78-80 BPM, tape-soft, ending in a sound bath.</p>
+  <audio controls preload="none" src="https://maxthegiraffe.github.io/grateful-audio/hebrew-house-lofi-night.mp3"></audio>
+  <ol class="mix-list">
+    <li>A Minor Haze <span>2:16</span></li>
+    <li>Nylon Hiss Drift <span>1:35</span></li>
+    <li>Distant Humming <span>2:07</span></li>
+    <li>Shabbat Dust <span>2:10</span></li>
+    <li>Palm Lanterns (slowed) <span>3:22</span></li>
+    <li>Moonlit Santur (slowed) <span>3:42</span></li>
+    <li>Blue Addis Haze (slowed) <span>3:10</span></li>
+    <li>Rain Over A Minor <span>3:04</span></li>
+    <li>Blue Velvet Tehila <span>2:30</span></li>
+    <li>Ney in F Minor (slowed) <span>4:18</span></li>
+    <li>Keter Hall (slowed) <span>4:28</span></li>
+    <li>Desert Loom (slowed) <span>4:22</span></li>
+    <li>Ashen Tides <span>3:27</span></li>
+    <li>Shaar HaNeshamah <span>4:04</span></li>
+    <li>Tehom (slowed) <span>4:36</span></li>
+    <li>Cavernous Pulse (slowed) <span>4:40</span></li>
+    <li>Lev Shokea (slowed) <span>5:21</span></li>
+    <li>Shnei Tzlilim (slowed) <span>5:19</span></li>
+    <li>Mayim Shchorim (slowed) <span>6:17</span></li>
+    <li>Ner Echad (slowed) <span>4:34</span></li>
+    <li>Dust in the Palm <span>3:33</span></li>
+    <li>Saffron Bowl <span>3:34</span></li>
+    <li>A Tone Apart <span>3:32</span></li>
+    <li>Stone Bowl Prayer <span>3:54</span></li>
+    <li>Last Gong Fades <span>3:34</span></li>
+  </ol>
+</section>
+
+<div class="round"><span class="round-label">The originals</span><span class="round-rule"></span></div>
+
+<section class="vibe">
+  <p class="vibe-note" style="margin-bottom:18px">
+    Where it started. The songs on Suno as
+    <a href="https://suno.com/@hebrewhouse" style="color:var(--accent)">@hebrewhouse</a>,
+    almost all of them in A minor between 123 and 126 BPM, the pocket every set above is locked to.
+  </p>
+
+  <div class="track primary">
+    <div class="track-top"><span class="track-title">Ohev yamim</span><span class="take pick">123 BPM · Am</span><span class="dur">3:12</span></div>
+    <audio controls preload="none" src="https://cdn1.suno.ai/e0f9e64c-f7d0-4c88-b8a1-6e643e070223.mp3"></audio>
+  </div>
+
+  <div class="track primary">
+    <div class="track-top"><span class="track-title">Choir nefesh</span><span class="take pick">Am · choir house</span><span class="dur">6:58</span></div>
+    <audio controls preload="none" src="https://cdn1.suno.ai/b9e0f94f-8933-4896-9622-b74e2ff427e5.mp3"></audio>
+  </div>
+
+  <div class="track">
+    <div class="track-top"><span class="track-title">Afro House Ham De Lee Lee</span><span class="take">126 BPM · Am</span><span class="dur">3:31</span></div>
+    <audio controls preload="none" src="https://cdn1.suno.ai/71cc37c2-c11b-45dd-9018-d13a5a20f883.mp3"></audio>
+  </div>
+
+  <div class="track">
+    <div class="track-top"><span class="track-title">Aye Yai Tech</span><span class="take">123 BPM · Am</span><span class="dur">3:32</span></div>
+    <audio controls preload="none" src="https://cdn1.suno.ai/3309bb86-d9ba-469d-ac6a-e5c9e96c8411.mp3"></audio>
+  </div>
+
+  <div class="track">
+    <div class="track-top"><span class="track-title">Mizmor l'David</span><span class="take">76 BPM · F · jazz</span><span class="dur">2:04</span></div>
+    <audio controls preload="none" src="https://cdn1.suno.ai/1a4a5b46-fc55-4419-a035-64a04c9a42b0.mp3"></audio>
+  </div>
+</section>
+
+<footer>
+  Hebrew House on Suno: <a href="https://suno.com/@hebrewhouse">@hebrewhouse</a>
+</footer>
+
+</div>
+
+<script>
+  const KEY = 'hebrew-house-hearts';
+  const saved = JSON.parse(localStorage.getItem(KEY) || '[]');
+  document.querySelectorAll('.heart').forEach(function (b) {
+    if (saved.indexOf(b.dataset.id) > -1) b.classList.add('on');
+    b.addEventListener('click', function () {
+      b.classList.toggle('on');
+      const cur = JSON.parse(localStorage.getItem(KEY) || '[]');
+      const i = cur.indexOf(b.dataset.id);
+      if (i > -1) cur.splice(i, 1); else cur.push(b.dataset.id);
+      localStorage.setItem(KEY, JSON.stringify(cur));
+    });
+  });
+  const players = document.querySelectorAll('audio');
+  players.forEach(function (a) {
+    a.addEventListener('play', function () {
+      players.forEach(function (o) { if (o !== a) o.pause(); });
+    });
+  });
+</script>
+</body>
+</html>
