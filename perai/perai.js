@@ -253,7 +253,7 @@ function create(canvas, opts = {}) {
   const font = opts.font || '"Frank Ruhl Libre", "Times New Roman", serif';
   const gl = canvas.getContext('webgl', {antialias: false, alpha: false, depth: false, preserveDrawingBuffer: !!opts.preserve, powerPreference: 'high-performance'});
   if (!gl) return null;
-  const eng = {ok: false, dur: 0, scale: opts.scale || 1, center: [0.5, 0.5], zoom: 1, word: null, fadeIn: true};   // word: {x, span} in scene units, to keep lyrics clear of page copy
+  const eng = {ok: false, dur: 0, scale: opts.scale || 1, center: [0.5, 0.5], zoom: 1, word: null, subs: true, fadeIn: true};   // word: {x, span} in scene units, to keep lyrics clear of page copy
   const prog = fs => {
     const p = gl.createProgram();
     [[gl.VERTEX_SHADER, VS], [gl.FRAGMENT_SHADER, fs]].forEach(([t, s]) => {
@@ -396,7 +396,7 @@ function create(canvas, opts = {}) {
     const fr = Math.min(3, dt * 60);   // feedback tuned at 60 fps, kept the same at any frame rate
     gl.uniform4f(u.uFb, Math.pow(st.fb[0], fr), st.fb[1] * fr, Math.pow(Math.min(0.985, st.fb[2]), fr), st.fb[3] * fr);
     const W = U.W; W.fill(0); for (let i = 0; i < 6; i++) W[i * 4 + 3] = -1;
-    if (st.word) {
+    if (st.word && eng.subs !== false) {   // the sung words, unless subtitles are off
       const {w, e, amt, big} = st.word, L = layout(w);
       const span = eng.word ? eng.word.span : 2 * (fw / fh) / zoom * 0.84, size = Math.min(big ? 0.62 : 0.4, span / Math.max(1, L.w), eng.word && eng.word.h ? eng.word.h / 1.2 : 9), wx = eng.word ? eng.word.x : 0, wy = eng.word && eng.word.y || 0;
       L.letters.slice(0, 6).forEach((l, i) => {
@@ -414,7 +414,7 @@ function create(canvas, opts = {}) {
     gl.uniform2f(show.u.uRes, canvas.width, canvas.height); gl.uniform2f(show.u.uCenter, cx, cy);
     gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, atlas); gl.uniform1i(show.u.uAtlas, 1);
     gl.uniform1f(show.u.uZoom, zoom); gl.uniform1f(show.u.uAA, 2 / (fh * zoom)); gl.uniform4fv(show.u.uW, W);
-    gl.uniform4f(show.u.uWord, st.word ? st.word.amt : 0, 0, 0, 0);
+    gl.uniform4f(show.u.uWord, st.word && eng.subs !== false ? st.word.amt : 0, 0, 0, 0);
     gl.uniform1f(show.u.uKick, st.kick); gl.uniform1f(show.u.uFlash, (reduce ? 0.25 : 1) * st.flash); gl.uniform1f(show.u.uFade, st.fade); gl.uniform1f(show.u.uT, t);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     ping ^= 1;
