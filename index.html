@@ -84,7 +84,23 @@ body::after{content:"";position:fixed;inset:-50%;z-index:60;pointer-events:none;
 
 /* ---------- hero ---------- */
 .hero{position:relative;height:100vh;height:100svh;min-height:560px;overflow:hidden}
-#wheel{position:absolute;inset:0;width:100%;height:100%;display:block}
+#wheel{position:absolute;inset:0;width:100%;height:100%;display:block;transition:opacity 1.2s ease}
+#perai{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity 1.2s ease;pointer-events:none}
+.hero.pv #perai{opacity:1}
+.hero.pv #wheel{opacity:0}
+.hero::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;opacity:0;transition:opacity 1.2s ease;
+  background:linear-gradient(to top,rgba(11,9,7,.9) 0%,rgba(11,9,7,.45) 34%,rgba(11,9,7,0) 60%),linear-gradient(to right,rgba(11,9,7,.55),rgba(11,9,7,0) 55%)}
+.hero.pv::before{opacity:1}
+.pv-btn{display:inline-flex;align-items:center;gap:10px;margin:0 0 18px;padding:9px 16px 9px 12px;border-radius:999px;border:1px solid rgba(243,231,209,.28);
+  background:rgba(11,9,7,.45);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--bone);
+  opacity:0;transform:translateY(12px);transition:opacity 1s ease .7s,transform 1s ease .7s,border-color .3s}
+.in .pv-btn{opacity:1;transform:none}
+.pv-btn:hover{border-color:var(--acc)}
+.pv-btn .he{font-family:var(--serif);font-weight:700;font-size:17px;letter-spacing:0;text-transform:none;color:var(--acc)}
+.pv-ic{width:22px;height:22px;border-radius:50%;background:var(--acc);display:grid;place-items:center;flex:none}
+.pv-ic svg{width:9px;height:9px;fill:var(--night);margin-left:1px}
+.pv-btn.on .pv-ic{animation:pvpulse 0.96s ease-out infinite}
+@keyframes pvpulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--acc) 70%,transparent)}100%{box-shadow:0 0 0 10px transparent}}
 .hero-copy{position:absolute;left:clamp(16px,4vw,56px);right:clamp(16px,4vw,56px);bottom:calc(76px + clamp(20px,5vh,56px));z-index:2;max-width:760px}
 .mark{position:relative;margin:0;font-weight:900;font-size:clamp(62px,15.5vw,212px);line-height:.84;letter-spacing:-.035em}
 .mk{display:block}
@@ -259,7 +275,9 @@ footer{padding:clamp(60px,12vh,140px) clamp(16px,6vw,96px) calc(140px + env(safe
 <main id="top">
   <section class="hero" id="hero">
     <canvas id="wheel" aria-hidden="true"></canvas>
+    <canvas id="perai" aria-hidden="true"></canvas>
     <div class="hero-copy">
+      <button class="pv-btn" id="pvbtn"><span class="pv-ic"><svg viewBox="0 0 16 16" id="pvicon"><path d="M4 2l10 6-10 6z"/></svg></span><span id="pvtxt">Watch Pera'i</span><span class="he" lang="he" dir="rtl">פראי</span></button>
       <h1 class="mark" aria-label="Hebrew House">
         <span class="mk mk-r" aria-hidden="true">Hebrew<br>House</span>
         <span class="mk mk-b" aria-hidden="true">Hebrew<br>House</span>
@@ -336,6 +354,7 @@ footer{padding:clamp(60px,12vh,140px) clamp(16px,6vw,96px) calc(140px + env(safe
 
 <script id="hh-data" type="application/json">{"sets":[{"title":"The Set","tag":"the journey","tempo":"126 BPM","key":"A minor","color":"#f0b45a","note":"One continuous journey, every track at 126 BPM in A minor. Oud, darbuka, Hebrew choir and four on the floor, beatmatched end to end.","id":"hebrew-house-set","audio":"https://maxthegiraffe.github.io/grateful-audio/hebrew-house-set.mp3","len":3145,"tracks":[["Petach HaLev",248],["Or Al HaMayim",234],["Tzel Achar HaTzohorayim",212],["Desert Brass Pulse",206],["Desert Lantern Groove",232],["Kavod Loop",191],["Kivun Acher",192],["Kav Kesher",190],["Esh Av Echad",216],["Sanctuary Pulse",258],["Shaar HaNefesh",214],["Neshamot Hall",219],["Lech Imi",204],["Etzem VeTof",194],["Kesher Vibe",214],["Birkat Acharon HaYotze",209]],"peak":13},{"title":"Shevet","he":"שבט","tag":"the tribe","tempo":"125 BPM","color":"#d4553a","note":"Dirty tribal shuffle tech house: shuffled congas, timbales and darbuka over a gritty rolling bassline, swung hats and a chanted Hebrew hook on every track, from Kol to Ad HaShachar.","id":"shevet","audio":"https://maxthegiraffe.github.io/grateful-audio/shevet.mp3","len":3708,"tracks":[["Kol",261],["Adama",243],["Tof",245],["Lapid",245],["Ma'agal",245],["Ra'am",243],["Lahat",245],["Lemala",245],["Pera'i",245],["Sod",245],["Chol",243],["Rega",243],["Shevet",245],["Simcha",243],["Ad HaShachar",261]],"peak":-1},{"title":"The Set II","tag":"the band","tempo":"126 BPM","color":"#ffcf87","note":"Hebrew house with a full band: Balkan brass, disco funk, Hammond soul jazz, Afrobeat horns, big band swing, klezmer clarinet and gospel, every track its own, with oud and darbuka throughout.","id":"the-set-ii","audio":"https://maxthegiraffe.github.io/grateful-audio/the-set-ii.mp3","len":3861,"tracks":[["Bo'i",220],["Mayim Chayim",241],["Tzel Te'ena",241],["Chatzotzrot",240],["Panas",241],["Hadar",241],["Derech Chadasha",243],["Chut Shani",241],["Ner Tamid",238],["Mikdash Me'at",241],["Pnima",241],["Kahal",241],["Tavo Iti",241],["Dofek",241],["Kirva",241],["Brachat Preda",257]],"peak":-1},{"title":"Modah Ani","he":"מודה אני","tag":"the story","tempo":"119 to 126 BPM","key":"A minor","color":"#ff9e7a","note":"Hebrew house grown from two voice memos of one evening: her guitar, her prayer, her song, a room singing nai nai. It opens before time, climbs to 126, drops at Dim'a, then thanks in every language and lands with everyone singing.","id":"modah-ani","audio":"https://maxthegiraffe.github.io/grateful-audio/modah-ani.mp3","len":3704,"tracks":[["Before Time",223],["Once Upon a Time",434],["Sunlight Kissed",141],["Kol Bli Milim",384],["Zerem",137],["Dreidel",144],["Sha'onim Shonim",175],["Maher Midai",270],["Dim'a",149],["Neshama Chozeret",232],["Toda Raba",104],["We Say Thank You",406],["Nai Nai, Peak",358],["Nai Nai, Everyone",213],["Everyone",136],["Nai Nai, Everyone (reprise)",197]],"peak":-1},{"title":"Rikud","he":"ריקוד","tag":"the dance floor","tempo":"126 BPM","key":"A minor","color":"#ff4fa3","note":"Peak-time, 126 BPM start to finish in A minor. Tribal drums, rolling basslines, piano house, an acid peak, and Hebrew choirs over oud and brass, from the desert to sunrise.","id":"rikud","audio":"https://maxthegiraffe.github.io/grateful-audio/rikud.mp3","len":3726,"tracks":[["Knisa",280],["Tambor",264],["Lev Patuach",266],["Yalla",264],["Ha'Or Ba",266],["Bayit",266],["Shalhevet",264],["Midbar",262],["Kol HaMayim",266],["Esh",234],["Rikud",264],["Neshima",310],["Shir HaLaila",228],["Ad HaBoker",283]],"peak":-1},{"title":"Toda Raba","he":"תודה רבה","tag":"the gratitude","tempo":"126 BPM","key":"A minor","color":"#3fd6a0","note":"Her songs from two voice memos, rebuilt for the dance floor at 126 BPM: once upon a time, water, sunlight, a dreidel, thank you in every language, the prayer, and a room singing nai nai together.","id":"toda-raba","audio":"https://maxthegiraffe.github.io/grateful-audio/toda-raba.mp3","len":3650,"tracks":[["Wordless",257],["Once Upon a Time",483],["Water",481],["Sunlight Kissed",480],["Dreidel",483],["Toda Raba",241],["Modah Ani",241],["Dim'a",238],["Nai Nai",483],["Everyone",257]],"peak":-1},{"title":"Hebrew House Deep","tag":"hypnotic","tempo":"124 BPM","key":"A minor","color":"#3fb8c9","note":"Built in the shadow of Petach HaLev: 124 BPM, A minor, sub forward. It never builds and never drops, it just keeps you there.","id":"hebrew-house-deep","audio":"https://maxthegiraffe.github.io/grateful-audio/hebrew-house-deep.mp3","len":3666,"tracks":[["Petach HaLev",248],["Melech Katan",246],["Tehom",179],["Cavernous Pulse",181],["Lech Iti",179],["Lev Shokea",207],["Layla Arokh",179],["Shnei Tzlilim",205],["Ash And Honey",221],["Tzadiq Loop",246],["Kav HaShemesh",206],["Kesher Nistar",234],["Mayim Shchorim",243],["Ash And Honey II",217],["Mayim Shchorim II",224],["Shivtei Or",267],["Midnight Tefillin",479]],"peak":-1},{"title":"Slow Hebrew House","tag":"unhurried","tempo":"100 BPM","color":"#d08a5c","note":"100 BPM. The same oud, darbuka, kanun, ney and Hebrew choir, half the urgency.","id":"slow-hebrew-house","audio":"https://maxthegiraffe.github.io/grateful-audio/slow-hebrew-house.mp3","len":3305,"tracks":[["Amin Hatar",218],["Tzila Fade B",211],["Avak Zahav",247],["Tzila Fade",226],["Shufled Smoke",197],["Harbor Strut",161],["Chol Al HaMayim",194],["Desert Loom",204],["Keter Hall",204],["Ner Echad",211],["Open the Chapel",233],["Yadayim Rabot",163],["Yad BeYad, Kol Echad",161],["Etz HaTamar",194],["Or Zahav",266],["Or Zahav B",223],["Avak Zahav B",235]],"peak":13},{"title":"Diwan","tag":"fire","tempo":"129 to 136 BPM","color":"#ff6a2b","note":"Yemenite Mizrahi house, the hardest and fastest set here. 129 BPM rising to 136, ululation, darbuka and riq, acid lines in a Middle Eastern scale, distorted oud.","id":"diwan-full","audio":"https://maxthegiraffe.github.io/grateful-audio/diwan-full.mp3","len":3519,"tracks":[["Salt on the Floor",213],["Sanaa Loop",216],["Qamar Loop",213],["Layla Bli Blamim",176],["Oumari Fire",211],["Desert Coil",220],["Ash Black",218],["Melek HaBalagan",207],["Stone Drum Rise",241],["Desert Pulse",269],["Desert Pulse B",259],["Yadayim Al HaTof",200],["Katz HaLaila",196],["قلب في سبأ",213],["Room Breathes Out",239],["Room Breathes Out B",199],["Ner Shel Erev",212],["Shalom",88]],"peak":12},{"title":"Freygish","tag":"world club","tempo":"123 to 136 BPM","key":"Hijaz","color":"#b97ae0","note":"Everything in Hijaz, the Ahavah Rabbah mode. Hebrew over amapiano, gqom, baile funk, jersey club, Detroit techno and psytrance, ramping from 123 to 136 and back down.","id":"freygish-set","audio":"https://maxthegiraffe.github.io/grateful-audio/freygish-set.mp3","len":3512,"tracks":[["Hollow Caravan",253],["Mosaic Sand",203],["Freygish Dunes",211],["Clay and Cedar",182],["Dust Over Haifa",204],["Clay Bowl Night",241],["Bouzouki Parade",131],["Broken Brass",212],["Yahrzeit Loop",212],["Ani Po",181],["Safed Drum Circle",176],["Yalla Lev",174],["Yahrzeit Loop B",212],["Bouzouki Sunstrut",174],["Tof VeShir",157],["Freygish Pulse B",199],["Freygish Pulse",243],["Esh BaYadayim",184],["Last Door Open",234]],"peak":17},{"title":"Tehom","he":"תהום","tag":"the abyss","tempo":"129 BPM","color":"#5b7cff","note":"Shamanic bass house at 129 BPM. Hebrew chant used as percussion, a halftime drop into Tehom Amuka, the deep abyss, then the room empties.","id":"hebrew-bass-set","audio":"https://maxthegiraffe.github.io/grateful-audio/hebrew-bass-set.mp3","len":1219,"tracks":[["Ash Bowl",238],["Od VeOd",176],["Desert Incantation",209],["Tehom Amuka",194],["Vav Slam",130],["Temple Subwave",179],["Empty Room Fade",187]],"peak":4},{"title":"Canopée","tag":"bright","tempo":"112 BPM","key":"major keys","color":"#9bd36a","note":"The bright side. Major keys at 112 BPM: marimba, kalimba, steel drums, flute, whistling, birdsong. The Hebrew is sung like friends rather than a cantor.","id":"canopee","audio":"https://maxthegiraffe.github.io/grateful-audio/canopee.mp3","len":3694,"tracks":[["Birkat Erev",252],["Mafteach Rach",194],["Golden Tamarind",198],["Boker Al HaChol",174],["Ata Sheli",169],["Ruach Al HaMayim",221],["Shemesh Al HaDek",214],["Sivuv BeAnan",219],["Galei Zahav",213],["Shemesh Zgugit",239],["Shemesh Zgugit B",239],["Or Al HaYam",183],["Kochav Shel Yam",175],["Birkat Erev B",220],["Little Blue Door",194],["Or Yored Lat B",226],["Or Yored Lat",242],["Tziporim Bagan",479]],"peak":14},{"title":"Hebrew House Lofi","tag":"dusty","tempo":"boom bap","color":"#d9b48c","note":"The whole sound slowed down. Dusty Rhodes, vinyl crackle, oud over boom bap, then the drums dissolve into singing bowls, chimes and a final gong.","id":"hebrew-house-lofi","audio":"https://maxthegiraffe.github.io/grateful-audio/hebrew-house-lofi.mp3","len":1972,"tracks":[["A Minor Haze",136],["Nylon Hiss Drift",95],["Distant Humming",127],["Rain Over A Minor",184],["Blue Velvet Tehila",150],["Ashen Tides",207],["Shabbat Dust",130],["Sha'ar HaNeshamah",244],["Dust in the Palm",213],["Saffron Bowl",214],["A Tone Apart",212],["Stone Bowl Prayer",234],["Last Gong Fades",214]],"peak":5},{"title":"Hebrew House Lofi Night","tag":"sleep","tempo":"78 to 80 BPM","color":"#9590d6","note":"Built to fall asleep to. Slowed to 78 to 80 BPM, tape soft, ending in a sound bath.","id":"hebrew-house-lofi-night","audio":"https://maxthegiraffe.github.io/grateful-audio/hebrew-house-lofi-night.mp3","len":5310,"tracks":[["A Minor Haze",136],["Nylon Hiss Drift",95],["Distant Humming",127],["Shabbat Dust",130],["Palm Lanterns (slowed)",202],["Moonlit Santur (slowed)",222],["Blue Addis Haze (slowed)",190],["Rain Over A Minor",184],["Blue Velvet Tehila",150],["Ney in F Minor (slowed)",258],["Keter Hall (slowed)",268],["Desert Loom (slowed)",262],["Ashen Tides",207],["Shaar HaNeshamah",244],["Tehom (slowed)",276],["Cavernous Pulse (slowed)",280],["Lev Shokea (slowed)",321],["Shnei Tzlilim (slowed)",319],["Mayim Shchorim (slowed)",377],["Ner Echad (slowed)",274],["Dust in the Palm",213],["Saffron Bowl",214],["A Tone Apart",212],["Stone Bowl Prayer",234],["Last Gong Fades",214]],"peak":-1}],"originals":[{"title":"Ohev yamim","meta":"123 BPM · Am","dur":"3:12","src":"https://cdn1.suno.ai/e0f9e64c-f7d0-4c88-b8a1-6e643e070223.mp3","id":"e0f9e64c-f7d0-4c88-b8a1-6e643e070223"},{"title":"Choir nefesh","meta":"Am · choir house","dur":"6:58","src":"https://cdn1.suno.ai/b9e0f94f-8933-4896-9622-b74e2ff427e5.mp3","id":"b9e0f94f-8933-4896-9622-b74e2ff427e5"},{"title":"Afro House Ham De Lee Lee","meta":"126 BPM · Am","dur":"3:31","src":"https://cdn1.suno.ai/71cc37c2-c11b-45dd-9018-d13a5a20f883.mp3","id":"71cc37c2-c11b-45dd-9018-d13a5a20f883"},{"title":"Aye Yai Tech","meta":"123 BPM · Am","dur":"3:32","src":"https://cdn1.suno.ai/3309bb86-d9ba-469d-ac6a-e5c9e96c8411.mp3","id":"3309bb86-d9ba-469d-ac6a-e5c9e96c8411"},{"title":"Mizmor l'David","meta":"76 BPM · F · jazz","dur":"2:04","src":"https://cdn1.suno.ai/1a4a5b46-fc55-4419-a035-64a04c9a42b0.mp3","id":"1a4a5b46-fc55-4419-a035-64a04c9a42b0"}]}</script>
 
+<script src="perai/perai.js"></script>
 <script>
 (() => {
 const D = JSON.parse(document.getElementById('hh-data').textContent);
@@ -435,11 +454,16 @@ const bands = new Float32Array(6);
 function qv(v, i, b) { if (i < 0 || i >= v.frames) return 0; const x = v.q[i * 3 + (b >> 1)]; return (b & 1 ? x & 15 : x >> 4) / 15; }
 
 // ---------- player ----------
+const PERAI = {audio: 'https://maxthegiraffe.github.io/grateful-audio/perai.mp3'};
 let cur = {kind: null}, pendingSeek = null;
 const deck = $('#deck'), disc = $('#disc');
 function syncPlayState() {
   const on = !audio.paused;
   $('#ppicon').innerHTML = on ? PAUSE : PLAY;
+  const pvn = cur.kind === 'perai';
+  $('#pvbtn').classList.toggle('on', pvn && on);
+  $('#pvicon').innerHTML = pvn && on ? PAUSE : PLAY;
+  $('#pvtxt').textContent = pvn ? (on ? "Now playing · Pera'i" : "Pera'i, paused") : "Watch Pera'i";
   $('#pp').setAttribute('aria-label', on ? 'Pause' : 'Play');
   deck.classList.toggle('paused', !on);
   document.body.classList.toggle('paused', !on);
@@ -464,8 +488,30 @@ function playSet(i, t) {
   if (t != null) seek(t);
   start();
 }
-function toggle() { if (!cur.kind) return playSet(0, null); audio.paused ? start() : audio.pause(); }
+function playPerai(t) {   // the hero video: Pera'i, from Shevet
+  if (cur.kind !== 'perai') {
+    cur = {kind: 'perai', bpm: 125};
+    viz = null; bi = 0;
+    audio.src = PERAI.audio;
+    const sh = SETS.find(s => s.id === 'shevet');
+    setAccent(sh ? sh.color : '#d4553a');
+    $('#dset').textContent = 'Shevet · the video'; $('#dtrk').textContent = "Pera'i · פראי";
+    setMeta("Pera'i", 'Shevet');
+    setEls.forEach(el => el.classList.remove('on'));
+    document.querySelectorAll('.tl li.now').forEach(li => li.classList.remove('now'));
+  }
+  if (t != null) seek(t);
+  start();
+}
+function afterPerai() {   // carry on into Shevet, right after Pera'i
+  const i = SETS.findIndex(s => s.id === 'shevet');
+  if (i < 0) return playSet(0, 0);
+  const s = SETS[i], k = s.tracks.findIndex(t => t[0] === "Pera'i");
+  playSet(i, k >= 0 && k + 1 < s.tracks.length ? s.starts[k + 1] + 0.3 : 0);
+}
+function toggle() { if (!cur.kind) return playPerai(0); audio.paused ? start() : audio.pause(); }
 function step(d) {
+  if (cur.kind === 'perai') return d < 0 ? seek(0) : afterPerai();
   if (cur.kind !== 'set') return;
   const s = cur.s, k = cur.track + d;
   if (d < 0 && audio.currentTime - s.starts[Math.max(0, cur.track)] > 4) return seek(s.starts[Math.max(0, cur.track)] + 0.3);
@@ -478,7 +524,7 @@ $('#prev').addEventListener('click', () => step(-1));
 $('#next').addEventListener('click', () => step(1));
 audio.addEventListener('play', syncPlayState);
 audio.addEventListener('pause', syncPlayState);
-audio.addEventListener('ended', () => playSet((cur.i + 1) % SETS.length, 0));
+audio.addEventListener('ended', () => cur.kind === 'perai' ? afterPerai() : playSet((cur.i + 1) % SETS.length, 0));
 const topBar = $('.top');
 addEventListener('scroll', () => topBar.classList.toggle('solid', scrollY > innerHeight * 0.7), {passive: true});
 document.addEventListener('keydown', e => {
@@ -538,15 +584,9 @@ let opened = false, burst = 0;
 loadViz(SETS[0] || {id: 'none'});
 function openGate(withSound) {
   if (opened) return; opened = true;
-  if (withSound && SETS.length) {
+  if (withSound) {
     if (navigator.audioSession) try { navigator.audioSession.type = 'playback'; } catch (e) {}
-    const last = store.get('hh-last'), li = last ? SETS.findIndex(s => s.id === last.id) : -1;
-    if (li >= 0 && last.t > 20) playSet(li, last.t);
-    else {   // start where the kick comes in, without waiting on the network
-      const v0 = vizCache[SETS[0].id];
-      playSet(0, null);
-      Promise.resolve(v0).then(v => { if (v && v.hot && audio.currentTime < 1 && cur.i === 0) seek(v.hot); });
-    }
+    playPerai(0);   // the hero video, in sync with its track
   } else {
     deck.classList.add('show'); syncPlayState();
   }
@@ -582,8 +622,12 @@ const io = new IntersectionObserver(es => es.forEach(e => vis[e.target.dataset.v
 function sample(now) {
   const playing = !audio.paused && cur.kind;
   const t = audio.currentTime;
-  let beatT = -9, beatN = -1;
-  if (playing && viz) {
+  let beatT = -9, beatN = -1, pk = null;
+  if (playing && cur.kind === 'perai' && pv && pv.ok) {
+    for (let b = 0; b < 6; b++) bands[b] = Math.min(1, Math.max(0, (pv.band(t, b) - 0.25) * 1.6));
+    beatN = Math.floor((t - pv.t0) / pv.p); beatT = pv.t0 + beatN * pv.p;
+    const L = pv.levels(t); pk = L ? L.kick : 0;
+  } else if (playing && viz) {
     const f = t * viz.fps, i = Math.floor(f), fr = f - i;
     for (let b = 0; b < 6; b++) bands[b] = qv(viz, i, b) * (1 - fr) + qv(viz, i + 1, b) * fr;
     const bt = viz.bt;
@@ -601,7 +645,7 @@ function sample(now) {
     for (let b = 0; b < 6; b++) bands[b] = 0.14 + 0.08 * Math.sin(now / 1400 + b * 1.1);
   }
   const k = t - beatT < 1 ? Math.exp(-(t - beatT) / 0.11) : 0;
-  kick = playing ? k * (0.55 + 0.45 * bands[0]) : 0;
+  kick = playing ? (pk != null ? pk : k * (0.55 + 0.45 * bands[0])) : 0;
   if (beatN !== lastBeatIdx && beatN >= 0) {
     lastBeatIdx = beatN; gateLetter = beatN % 22;
     if (!reduce && energy > 0.42 && parts.length < 70 && vis.hero) spawn(gateLetter, 1 + (energy > 0.6 ? 2 : 0));
@@ -697,14 +741,46 @@ function drawWheel(dt) {
   c.font = `900 ${bs}px "Frank Ruhl Libre"`; c.fillStyle = 'rgba(243,231,209,.95)'; c.fillText('ב', cx, cy + bs * 0.04);
 }
 
+// ---------- Pera'i, the hero video: perai/perai.js draws it live from the 22 letters ----------
+const heroEl = $('#hero'), pvCv = $('#perai');
+let pv = null, pvClock = 0, pvIdle = 0, pvAvg = 16, pvN = 0;
+try { pv = window.Perai ? Perai.create(pvCv, {data: 'perai/perai.json', reduce}) : null; } catch (e) { pv = null; }
+if (pv) pv.fadeIn = false;   // the first letter is already there while the track loads
+function placePv() {
+  if (!pv) return;
+  const wide = innerWidth > 900, cw = pvCv.clientWidth || innerWidth, ch = pvCv.clientHeight || innerHeight;
+  pv.center = wide ? [0.64, 0.52] : [0.5, 0.63];
+  pv.zoom = wide ? 1 : 0.9;
+  pv.word = null;   // wide screens: sing the words beside the heading, or above it
+  const hr = heroEl.getBoundingClientRect(), u = 2 / hr.height / pv.zoom;
+  const right = Math.max(...[...document.querySelectorAll('.mk-main .ln > span')].map(e => e.getBoundingClientRect().right)) - hr.left;
+  const x0 = right + 28, x1 = hr.width - 36, y1 = $('.hero-copy').getBoundingClientRect().top - hr.top - 12;
+  if (wide && x1 - x0 > hr.width * 0.3) pv.word = {x: ((x0 + x1) / 2 - pv.center[0] * hr.width) * u, span: (x1 - x0) * u};
+  else if (wide) pv.word = {x: (0.5 - pv.center[0]) * hr.width * u, y: ((1 - pv.center[1]) * hr.height - (70 + y1) / 2) * u, span: hr.width * 0.8 * u, h: Math.max(0, y1 - 70) * u};
+  pv.scale = Math.min(window.devicePixelRatio || 1, Math.sqrt(1.3e6 / (cw * ch))) * (pv.q || 1);
+}
+if (pv) { pv.ready.then(placePv, () => { pv = null; }); addEventListener('resize', placePv); }
+$('#pvbtn').addEventListener('click', () => { if (cur.kind === 'perai') toggle(); else playPerai(0); });
+function drawPerai(dt) {
+  if (cur.kind === 'perai') {   // a smooth clock, kept on the audio's
+    const t = audio.currentTime;
+    if (audio.paused) pvClock = t; else { pvClock += dt; if (Math.abs(pvClock - t) > 0.08) pvClock = t; else pvClock += (t - pvClock) * 0.08; }
+    pv.frame(pvClock, audio.paused ? 0 : dt);
+  } else { pvIdle += dt; pv.frame(pvIdle, dt, {idle: true}); }
+  pvAvg += (dt * 1000 - pvAvg) * 0.05;   // too slow for this screen: draw fewer pixels
+  if (++pvN > 90 && pvAvg > 24 && (pv.q || 1) > 0.4) { pv.q = (pv.q || 1) * 0.8; pvN = 0; placePv(); }
+}
+
 // ---------- frame loop ----------
 const mkR = $('.mk-r'), mkB = $('.mk-b'), g2 = $('.bet-glyph .g2'), g1 = $('.bet-glyph .g1');
 let last = performance.now(), lastRate = 0;
 function frame(now) {
   const dt = Math.min(0.05, (now - last) / 1000); last = now;
   sample(now);
+  const pvOn = !!(pv && pv.ok && (cur.kind === 'perai' || !cur.kind));
+  heroEl.classList.toggle('pv', pvOn);
   if (vis.hero) {
-    drawWheel(dt);
+    if (pvOn) drawPerai(dt); else drawWheel(dt);
     const sh = reduce ? 0 : kick * 7 + burst * 18;
     mkR.style.transform = `translate(${sh}px,${-sh * 0.3}px)`;
     mkB.style.transform = `translate(${-sh}px,${sh * 0.3}px)`;
