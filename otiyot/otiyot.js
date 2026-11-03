@@ -250,6 +250,7 @@ function readViz(v, tempo) {
   for (let i = 0; i < raw.length; i++) q[i] = raw.charCodeAt(i);
   let acc = 0, K = Array.from(v.beats, d => (acc += d) / 100), bpm = v.bpm;
   if (tempo && bpm > tempo * 1.3) { const gap = 0.8 * 60 / tempo; let prev = -9; K = K.filter(t => t - prev >= gap && (prev = t, true)); bpm = tempo; }   // slow sets: keep only real kicks
+  else if (tempo && bpm < tempo * 0.7) bpm *= 2;   // a tracker that heard half time: the kicks are right, the beat is twice as fast
   const nf = q.length / 3, fps = v.fps, P = 60 / bpm;
   const at = (j, b) => j < 0 || j >= nf ? 0 : (b & 1 ? q[j * 3 + (b >> 1)] & 15 : q[j * 3 + (b >> 1)] >> 4) / 15;
   const band = (t, b) => { const f = t * fps, i = Math.floor(f), r = f - i; return at(i, b) * (1 - r) + at(i + 1, b) * r; };

@@ -318,7 +318,7 @@ footer{padding:clamp(60px,12vh,140px) clamp(16px,6vw,96px) calc(140px + env(safe
     <div class="hx" id="hx">
       <div class="hx-song">
         <button class="pv-tool" id="hxprev" aria-label="Previous song"><svg viewBox="0 0 16 16"><path d="M10 3L5 8l5 5"/></svg></button>
-        <div class="hx-now"><button class="hx-set" id="hxset" aria-label="Next set"><span id="hxsetname">Hebrew House</span> <i>»</i></button><span class="hx-trk" id="hxtrk"></span></div>
+        <div class="hx-now"><button class="hx-set" id="hxset" aria-label="Next set"><span id="hxsetname">Songs</span> <i>»</i></button><span class="hx-trk" id="hxtrk"></span></div>
         <button class="pv-tool" id="hxnext" aria-label="Next song"><svg viewBox="0 0 16 16"><path d="M6 3l5 5-5 5"/></svg></button>
       </div>
       <div class="hx-let" role="radiogroup" aria-label="Letter">
@@ -496,6 +496,10 @@ function qv(v, i, b) { if (i < 0 || i >= v.frames) return 0; const x = v.q[i * 3
 
 // ---------- player ----------
 const LETTERS = ['alef', 'bet'];
+const SONGS = [   // single songs, cut from Shevet; the hero starts with the first
+  {id: 'perai', title: "Pera'i", he: 'פראי', tempo: '125 BPM', len: 242, audio: 'https://maxthegiraffe.github.io/grateful-audio/perai.mp3'},
+  {id: 'tof', title: 'Tof', he: 'תוף', tempo: '125 BPM', len: 242, audio: 'https://maxthegiraffe.github.io/grateful-audio/tof.mp3'},
+];
 let letter = LETTERS.includes(store.get('hh-letter')) ? store.get('hh-letter') : 'alef';
 let cur = {kind: null}, pendingSeek = null;
 const deck = $('#deck'), disc = $('#disc');
@@ -529,9 +533,28 @@ function playSet(i, t) {
   if (t != null) seek(t);
   start();
 }
-function toggle() { if (!cur.kind) return playSet(0, null); audio.paused ? start() : audio.pause(); }
+function playSong(i, t) {   // one song, start to end, then the next
+  const s = SONGS[i];
+  if (cur.kind !== 'song' || cur.i !== i) {
+    cur = {kind: 'song', i, s, track: -1};
+    viz = null; bi = 0;
+    loadViz(s).then(v => { if (cur.s === s) viz = v; });
+    audio.src = s.audio;
+    const sh = SETS.find(x => x.id === 'shevet'); setAccent(sh ? sh.color : '#d4553a');
+    $('#dset').textContent = 'Song'; $('#dtrk').textContent = `${s.title} · ${s.he}`;
+    setMeta(s.title, 'Hebrew House');
+    setEls.forEach(el => el.classList.remove('on'));
+    document.querySelectorAll('.tl li.now').forEach(li => li.classList.remove('now'));
+    otUse(s); hxLabel(); syncPlayState();
+  }
+  if (t != null) seek(t);
+  start();
+}
+const nextSong = () => cur.i + 1 < SONGS.length ? playSong(cur.i + 1, 0) : playSet(0, null);   // after the songs, the first set
+function toggle() { if (!cur.kind) return playSong(0, 0); audio.paused ? start() : audio.pause(); }
 function step(d) {
-  if (cur.kind !== 'set') return playSet(0, null);
+  if (cur.kind === 'song') return d > 0 ? nextSong() : audio.currentTime > 4 || cur.i === 0 ? seek(0) : playSong(cur.i - 1, 0);
+  if (cur.kind !== 'set') return playSong(0, 0);
   const s = cur.s, k = cur.track + d;
   if (d < 0 && audio.currentTime - s.starts[Math.max(0, cur.track)] > 4) return seek(s.starts[Math.max(0, cur.track)] + 0.3);
   if (k < 0) return seek(0);
@@ -543,7 +566,7 @@ $('#prev').addEventListener('click', () => step(-1));
 $('#next').addEventListener('click', () => step(1));
 audio.addEventListener('play', syncPlayState);
 audio.addEventListener('pause', syncPlayState);
-audio.addEventListener('ended', () => playSet((cur.i + 1) % SETS.length, 0));
+audio.addEventListener('ended', () => cur.kind === 'song' ? nextSong() : playSet((cur.i + 1) % SETS.length, 0));
 const topBar = $('.top');
 addEventListener('scroll', () => topBar.classList.toggle('solid', scrollY > innerHeight * 0.7), {passive: true});
 document.addEventListener('keydown', e => {
@@ -605,7 +628,7 @@ function openGate(withSound) {
   if (opened) return; opened = true;
   if (withSound) {
     if (navigator.audioSession) try { navigator.audioSession.type = 'playback'; } catch (e) {}
-    playSet(0, null);   // the first set, drawn live as a letter of fire
+    playSong(0, 0);   // the first song, drawn live as a letter of fire
   } else {
     deck.classList.add('show'); syncPlayState();
   }
@@ -760,8 +783,8 @@ function drawWheel(dt) {
 const heroEl = $('#hero'), otEl = $('#otiyot');
 let ot = null, otSet = null, otQ = 1, otAvg = 16, otN = 0, otClock = 0, otIdle = 0, otC = [0.5, 0.5], otZ = 1;
 const vizUrl = s => `viz/${s.id}.json`, tempoOf = s => parseFloat(s.tempo) || 0;
-try { ot = window.Otiyot && SETS[0] ? Otiyot.create(otEl, {viz: vizUrl(SETS[0]), tempo: tempoOf(SETS[0]), letter, reduce}) : null; } catch (e) { ot = null; }
-if (ot) { ot.fadeIn = false; ot.ready.then(() => { if (!otSet) otSet = SETS[0]; placeOt(); ot.center = otC.slice(); ot.zoom = otZ; }, () => { ot = null; }); }
+try { ot = window.Otiyot ? Otiyot.create(otEl, {viz: vizUrl(SONGS[0]), tempo: tempoOf(SONGS[0]), letter, reduce}) : null; } catch (e) { ot = null; }
+if (ot) { ot.fadeIn = false; ot.ready.then(() => { if (!otSet) otSet = SONGS[0]; placeOt(); ot.center = otC.slice(); ot.zoom = otZ; }, () => { ot = null; }); }
 else $('.hx-let').hidden = true;   // no WebGL2 here: the wheel stays, and so does the music
 function otUse(s) {   // a new set or a new letter: the same canvas, a new plan
   if (!ot) return;
@@ -778,7 +801,7 @@ function placeOt() {
 function drawOt(dt) {
   const k = Math.min(1, dt * 2.5);
   ot.center = ot.center.map((x, i) => x + (otC[i] - x) * k); ot.zoom += (otZ - ot.zoom) * k;
-  if (cur.kind === 'set' && cur.s === otSet && audio.currentTime > 0.05) {   // a smooth clock, kept on the audio's
+  if (cur.kind && cur.s === otSet && audio.currentTime > 0.05) {   // a smooth clock, kept on the audio's
     const t = audio.currentTime;
     if (audio.paused) otClock = t; else { otClock += dt; if (Math.abs(otClock - t) > 0.08) otClock = t; else otClock += (t - otClock) * 0.08; }
     ot.idle = false; ot.frame(otClock, dt);
@@ -786,21 +809,21 @@ function drawOt(dt) {
   otAvg += (dt * 1000 - otAvg) * 0.05;   // too slow for this screen: draw fewer pixels
   if (++otN > 90 && otAvg > 24 && otQ > 0.4) { otQ *= 0.8; otN = 0; placeOt(); }
 }
-function hxLabel() {
-  const s = cur.kind === 'set' ? cur.s : SETS[0]; if (!s) return;
-  $('#hxsetname').textContent = s.title;
-  $('#hxtrk').textContent = (s.tracks[Math.max(0, cur.kind === 'set' ? cur.track : 0)] || [''])[0];
+function hxLabel() {   // a song, or the set and its song
+  if (cur.kind !== 'set') { const s = cur.kind === 'song' ? cur.s : SONGS[0]; $('#hxsetname').textContent = 'Songs'; $('#hxtrk').textContent = `${s.title} · ${s.he}`; return; }
+  $('#hxsetname').textContent = cur.s.title;
+  $('#hxtrk').textContent = (cur.s.tracks[Math.max(0, cur.track)] || [''])[0];
 }
 function setLetter(l) {
   if (!LETTERS.includes(l) || l === letter) return;
   letter = l; store.set('hh-letter', l);
   document.querySelectorAll('.hx-l').forEach(b => b.setAttribute('aria-checked', b.dataset.l === l));
-  otUse(cur.kind === 'set' ? cur.s : (otSet || SETS[0]));
+  otUse(cur.kind ? cur.s : (otSet || SONGS[0]));
 }
-document.querySelectorAll('.hx-l').forEach(b => { b.setAttribute('aria-checked', b.dataset.l === letter); b.addEventListener('click', () => { setLetter(b.dataset.l); if (!cur.kind) playSet(0, null); }); });
+document.querySelectorAll('.hx-l').forEach(b => { b.setAttribute('aria-checked', b.dataset.l === letter); b.addEventListener('click', () => { setLetter(b.dataset.l); if (!cur.kind) playSong(0, 0); }); });
 $('#hxprev').addEventListener('click', () => step(-1));
 $('#hxnext').addEventListener('click', () => step(1));
-$('#hxset').addEventListener('click', () => playSet(cur.kind === 'set' ? (cur.i + 1) % SETS.length : 0, null));
+$('#hxset').addEventListener('click', () => cur.kind === 'set' && cur.i + 1 >= SETS.length ? playSong(0, 0) : playSet(cur.kind === 'set' ? cur.i + 1 : 0, null));   // songs, then each set, then back to the songs
 hxLabel();
 addEventListener('resize', placeOt);
 let stillT = 0;
@@ -808,7 +831,7 @@ function wake() { html.classList.remove('still'); clearTimeout(stillT); stillT =
 function setClear(on) {   // clear view: just the letter, full screen, no words of the page
   html.classList.toggle('clear', on);
   if (on) {
-    if (!cur.kind) playSet(0, null);
+    if (!cur.kind) playSong(0, 0);
     const el = document.documentElement;
     if (!document.fullscreenElement && el.requestFullscreen) el.requestFullscreen().catch(() => {});
     wake();
