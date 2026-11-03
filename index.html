@@ -781,7 +781,7 @@ function drawWheel(dt) {
 
 // ---------- the hero videos: perai/perai.js and tof/tof.js draw them live from the letters ----------
 const heroEl = $('#hero');
-let vClock = 0, vIdle = 0, vAvg = 16, vN = 0, subsOn = store.get('hh-cc') !== false;
+let vClock = 0, vIdle = 0, vAvg = 16, vN = 0, subsOn = store.get('hh-cc') === true;   // words stay off unless someone turns CC on
 function vidEng(k) {   // made on first use; null when this browser can't draw it
   const V = VIDS[k];
   if (V.eng === undefined) {
