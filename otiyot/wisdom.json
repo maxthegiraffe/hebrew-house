@@ -1,0 +1,21 @@
+{
+  "alef": {
+    "name": "Aleph",
+    "intro": {"he": "אָלֶף", "en": "Aleph. The first letter, the number one, the breath before every word.", "src": "The first of the three mother letters"},
+    "lines": [
+      {"k": "split", "he": "י · ו · י", "en": "Look closely: an aleph is drawn from three letters. A yod above, a yod below, and a vav between them.", "src": "The form of the letter"},
+      {"k": "split", "he": "כ״ו", "en": "Yod, vav, yod: ten, six and ten make twenty-six, the number of God's four-letter Name. The Name is hidden inside the first letter.", "src": "Kabbalah"},
+      {"k": "split", "he": "מַיִם עֶלְיוֹנִים · מַיִם תַּחְתּוֹנִים", "en": "The upper yod is the waters above, the lower yod the waters below, and the vav is the sky that holds them apart.", "src": "Genesis 1:7, as the mystics read it"},
+      {"k": "breath", "he": "רוּחַ", "en": "Aleph makes no sound of its own. It is the open breath that every vowel rides on.", "src": "The voice of the letter"},
+      {"k": "breath", "he": "אֲוִיר", "en": "Aleph was made king over air: the sky in the world, the mild season in the year, the chest in the body.", "src": "Sefer Yetzirah 3"},
+      {"k": "echo", "he": "אָנֹכִי", "en": "Some sages taught that at Sinai the people heard only the first letter, the aleph of Anochi, \"I am.\" A silence that held every word.", "src": "Rabbi Mendel of Rimanov"},
+      {"k": "ring", "he": "אֶחָד", "en": "Echad, one, begins with aleph. In the Zohar God tells the aleph: my oneness will be known only through you.", "src": "Zohar, introduction"},
+      {"k": "coin", "he": "אלף · פלא", "en": "Turn aleph around and read it backwards: אלף becomes פלא, pele. Wonder.", "src": "The play of the letters"},
+      {"k": "rise", "he": "אֲלָפִים", "en": "In the oldest Hebrew script aleph was drawn as an ox's head, horns and all. Alafim are oxen: the strength that pulls the plough.", "src": "Psalm 8:8 · the oldest Hebrew script"},
+      {"k": "*", "he": "אַלּוּף · אֶלֶף · אַאַלֶּפְךָ", "en": "The same three letters spell aluf, master; elef, a thousand; and a'alefcha, I will teach you.", "src": "Job 33:33"},
+      {"k": "*", "he": "אמ״ש", "en": "Three mother letters: aleph, mem, shin. Air, water, fire. Aleph is the air between them, the tongue of the scale that keeps fire and water in balance.", "src": "Sefer Yetzirah 2:1, 3:4"},
+      {"k": "*", "he": "קי״א", "en": "Aleph is one. Spelled in full, אלף adds to 111: one, ten, a hundred. One at every level.", "src": "Gematria"},
+      {"k": "*", "he": "בְּרֵאשִׁית", "en": "Every letter asked to begin the world. Aleph alone stood back and did not ask, and was promised the first word at Sinai instead.", "src": "Zohar, introduction · Bereshit Rabbah 1:10"}
+    ]
+  }
+}

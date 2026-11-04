@@ -118,6 +118,15 @@ html.lit .hero-copy{opacity:0;transform:translateY(18px);pointer-events:none}
 .hx-l[aria-checked="true"]{color:var(--night);background:var(--bone)}
 .hx-l:hover{border-color:var(--acc)}
 html.clear .hx{bottom:calc(20px + env(safe-area-inset-bottom))}
+.wz{position:absolute;left:50%;bottom:150px;z-index:3;width:min(620px,calc(100vw - 32px));transform:translate(-50%,10px);text-align:center;pointer-events:none;
+  opacity:0;transition:opacity .9s ease,transform .9s ease;text-shadow:0 1px 16px rgba(0,0,0,.95),0 0 3px rgba(0,0,0,.85)}
+.wz.on{opacity:1;transform:translate(-50%,0)}
+.wz::before{content:"";position:absolute;inset:-30px -48px;z-index:-1;background:radial-gradient(closest-side,rgba(11,9,7,.6),rgba(11,9,7,0))}
+.wz-he{font-family:var(--serif);font-weight:500;font-size:clamp(22px,2.4vw,30px);line-height:1.25;color:var(--acc);margin-bottom:6px}
+.wz-en{font-family:var(--serif);font-size:clamp(15.5px,1.45vw,19px);line-height:1.45;color:var(--bone)}
+.wz-src{margin-top:9px;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+html:not(.lit):not(.clear) .wz{display:none}
+@media (prefers-reduced-motion:reduce){.wz{transition:opacity .5s ease;transform:translate(-50%,0)}}
 html.clear.still .hx{opacity:0}
 @media (max-width:640px){   /* a phone: the song on top, the five letters in a row under it */
   .hx{flex-wrap:wrap;justify-content:center;border-radius:24px;row-gap:2px;width:max-content}
@@ -321,6 +330,7 @@ footer{padding:clamp(60px,12vh,140px) clamp(16px,6vw,96px) calc(140px + env(safe
       <p class="lede"><strong>The best Hebrew house on earth.</strong> Oud, darbuka, kanun and a Hebrew choir over four on the floor.</p>
       <a class="cue" href="#sets"><span id="cuetext">Ten sets below</span> <i>↓</i></a>
     </div>
+    <div class="wz" id="wz" aria-live="polite"><div class="wz-he" lang="he" dir="rtl"></div><div class="wz-en"></div><div class="wz-src"></div></div>
     <div class="hx" id="hx">
       <div class="hx-song">
         <button class="pv-tool" id="hxprev" aria-label="Previous song"><svg viewBox="0 0 16 16"><path d="M10 3L5 8l5 5"/></svg></button>
@@ -816,12 +826,54 @@ function drawOt(dt) {
     if (audio.paused) otClock = t; else { otClock += dt; if (Math.abs(otClock - t) > 0.08) otClock = t; else otClock += (t - otClock) * 0.08; }
     ot.idle = false; ot.frame(otClock, dt);
   } else { otIdle += dt; ot.idle = !cur.kind; ot.frame(((otSet && otSet.hot) || 0) + otIdle, dt); }   // nothing playing yet: the letter breathes
+  drawWisdom(otClock);
   // too slow for this screen: draw fewer pixels; fast again: sharpen back. A stall (loading, a hidden tab) doesn't count.
   const tNow = performance.now(), ms = tNow - (otT || tNow); otT = tNow;   // the real frame time (dt is capped at 50 ms)
   if (ms > 120 || document.hidden) { otN = 0; otAvg = 16.7; return; }   // a stall (loading, switching, a hidden tab) is not a slow screen
   otAvg += (ms - otAvg) * 0.05;
   if (++otN > 150 && otAvg > 25 && otQ > 0.5) { otQ = Math.max(0.5, otQ * 0.85); otN = 0; placeOt(); }   // under ~40 fps: a little softer
   else if (otN > 180 && otAvg < 19 && otQ < 1) { otQ = Math.min(1, otQ * 1.12); otN = 0; placeOt(); }   // smooth again: sharpen back
+}
+// ---------- getting to know the letter: its teachings, one at a time, timed to what the letter is doing ----------
+let WZ = null, wzFor = null, wzSched = [], wzT0 = [], wzCur = null, wzOff = 0, wzIntroL = '', wzIntroT = -99;
+fetch('otiyot/wisdom.json').then(r => r.json()).then(d => { WZ = d; }, () => {});
+const wzEl = $('#wz');
+window.hhDebug = () => ({ot, audio, letter});   // for checking the page from a test browser
+function wzPlan(C, W) {   // one line on every other chapter at most: a move's own teaching when it has one, else the next of the rest
+  const used = new Set(), out = []; let gap = 1;
+  C.forEach((c, k) => {
+    out[k] = null;
+    if (gap < 1 || c.t1 - c.t0 < 4) { gap++; return; }
+    if (used.size >= W.lines.length) used.clear();
+    const free = W.lines.filter(x => !used.has(x)), pick = free.find(x => x.k === c.kind) || free.find(x => x.k === '*') || free[0];
+    if (!pick) { gap++; return; }
+    used.add(pick); out[k] = pick; gap = 0;
+  });
+  return out;
+}
+function wisdomAt(t) {
+  const W = WZ && WZ[letter], C = ot && ot.plan;
+  if (!W || !C || !cur.kind || cur.s !== otSet || audio.paused) return null;
+  if (wzFor !== C) { wzFor = C; wzSched = wzPlan(C, W); wzT0 = C.map(c => c.t0); }
+  if (wzIntroL !== letter) { wzIntroL = letter; wzIntroT = t; }   // a new letter introduces itself first
+  if (t >= wzIntroT && t < wzIntroT + 7.5) return t > wzIntroT + 0.6 ? W.intro : null;
+  let lo = 0, hi = wzT0.length; while (lo < hi) { const m = (lo + hi) >> 1; if (wzT0[m] <= t) lo = m + 1; else hi = m; }
+  const k = lo - 1, c = C[k], it = k >= 0 ? wzSched[k] : null;
+  return it && t > c.t0 + 0.5 && t < Math.min(c.t1, c.t0 + 11) - 0.7 ? it : null;
+}
+function drawWisdom(t) {
+  const item = wisdomAt(t), on = wzEl.classList.contains('on'), now = performance.now();
+  const hx = $('#hx').getBoundingClientRect(), hero = heroEl.getBoundingClientRect();
+  wzEl.style.bottom = Math.round(hero.bottom - hx.top + 18) + 'px';   // just above the bar, wherever the bar sits
+  if (item === wzCur) {
+    if (item && !on && now - wzOff > 700) wzEl.classList.add('on');
+    else if (!item && on) { wzEl.classList.remove('on'); wzOff = now; }
+    return;
+  }
+  if (on) { wzEl.classList.remove('on'); wzOff = now; wzCur = null; return; }   // the last one fades out before the next one comes
+  if (now - wzOff < 700) return;
+  wzCur = item;
+  if (item) { wzEl.children[0].textContent = item.he; wzEl.children[1].textContent = item.en; wzEl.children[2].textContent = item.src || ''; wzEl.classList.add('on'); }
 }
 function hxLabel() {   // a song, or the set and its song
   if (cur.kind !== 'set') { const s = cur.kind === 'song' ? cur.s : SONGS[0]; $('#hxsetname').textContent = 'Songs'; $('#hxtrk').textContent = `${s.title} · ${s.he}`; return; }
