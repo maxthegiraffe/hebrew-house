@@ -717,7 +717,140 @@ const HEH = {
     },
   },
 };
-const PROGRAMS = {alef: ALEF, bet: BET, gimel: GIMEL, dalet: DALET, heh: HEH};
+// ---------- Mem · מ: sea-green fire, the mother letter of water, the depths ----------
+const MM = 12, LMD = 11;
+const MEM = {
+  calm: ['depths', 'mirror', 'ripple', 'breath'],
+  groove: ['wave', 'ripple', 'mirror', 'depths', 'echo'],
+  psy: ['whirlpool', 'mandala', 'warp', 'field'],
+  drop: 'whirlpool',
+  weight: {ripple: 2.5, wave: 2, depths: 2, mirror: 1.5},
+  tint: [0.45, 1.2, 1.5],   // the fire burns sea-green at its edges
+  // the mem as the atlas draws it, in glyph cell units: its ink box (glyphs.mjs)
+  box: [-0.168, -0.2227, 0.168, 0.2383],
+  kinds: {
+    ...moves(MM),
+    depths(s, m, c, L) {   // from the depths: it sinks a step on every bar and climbs back, small mems rising past it like breath
+      const [vx, vy] = m.view, B = c.bars, n = Math.floor(L), u = (n + sm(0.05, 0.7, L - n)) / B;
+      const deep = Math.sin(Math.PI * u), Z = BIG * (1 - 0.3 * deep);
+      s.heat = 0.82 - 0.2 * deep; s.rise = 0.4 - 0.1 * deep; s.cool = 2.6 + 0.6 * deep; s.tint = [0.85, 0.95, 1.15 + 0.15 * deep];
+      put(s, 0, -0.5 * vy * deep, Z, 0.05 * side(c) * Math.sin(2 * Math.PI * L / B), 1, MM);
+      for (let k = 0; k < 7; k++) {   // the bubbles keep to the sides
+        const q = (L / B * 1.5 + k / 7) % 1, x = (k % 2 ? 1 : -1) * (0.4 + 0.5 * ((k * 0.618) % 1)) * vx + 0.05 * Math.sin(q * 9 + k);
+        const w = sm(0, 0.15, q) * sm(1, 0.8, q) * sm(0, 0.5, L);
+        if (w > 0.01) put(s, x, -vy - 0.2 + q * (2 * vy + 0.4), 0.16 + 0.1 * ((k * 0.37) % 1), 0, 0.8 * w, MM, 1, w);
+      }
+    },
+    mirror(s, m, c, L) {   // it rests on still water and the water holds it upside down; on every bar it dips and the two touch
+      const per = c.mood === 'calm' ? 2 : 1, n = Math.floor(L / per), f = L / per - n, y0 = MEM.box[1], Z = Math.min(BIG * 0.72, (0.9 * m.view[1] - 0.16) / (MEM.box[3] - y0));   // the pair fits the frame
+      const touch = Math.sin(Math.PI * sm(0.05, 0.7, f)), h = -y0 * Z + 0.04 + 0.12 * (1 - touch);   // its middle sits this far above the water
+      const wob = 1 + 0.06 * Math.sin(m.t * 5.5) * (0.4 + touch);
+      s.zoom = 1 + 0.04 * touch; s.heat = 0.8;
+      put(s, 0, h, Z, 0, 1, MM);
+      put(s, 0.02 * Math.sin(m.t * 3.1), -h, Z, Math.PI, 0.3 + 0.15 * touch, MM, -wob, 0.4 + 0.2 * touch);   // turned and flipped: upside down
+    },
+    ripple(s, m, c, L) {   // a drop on still water: three rings of small mems round it, and on every beat (every other in a break) the light runs out across them
+      const per = c.mood === 'calm' ? 2 : 1, d = side(c), [vx, vy] = m.view, q = ((m.beatI % per) + m.beatF) / per, g = sm(0, 0.5, L);
+      s.heat = 0.8; s.rise = 0.35; s.turb = 0.4;
+      put(s, 0, 0, BIG * (0.82 + 0.06 * Math.exp(-q * 5)), 0, 1, MM);
+      for (let j = 0; j < 3; j++) {
+        const r = Math.min(vx, vy) * (0.52 + 0.24 * j) + 0.12 * j, N = 6 + 2 * j, a0 = d * (0.3 * j + 0.04 * L);   // the rings stay put; only the light moves
+        const w = g * (0.18 + 0.82 * Math.exp(-((q - j * 0.22 + 1) % 1) * 4.5));
+        for (let k = 0; k < N; k++) { const a = a0 + k * 2 * Math.PI / N; put(s, r * Math.cos(a) * (vx / Math.min(vx, vy)) ** 0.5, r * Math.sin(a), 0.2 + 0.03 * j, a - Math.PI / 2, w, MM, 1, w); }
+      }
+    },
+    wave(s, m, c, L) {   // a sea of mems: a row of them rides a swell that rolls across once a bar, turning back on the next
+      const [vx, vy] = m.view, N = 7, gap = 1.72 * vx / (N - 1), Z = Math.min(0.62, gap * 1.6), n = Math.floor(L);
+      const dir = (n + (c.r[0] < 0.5 ? 0 : 1)) % 2 ? -1 : 1, ph = m.barF;
+      s.heat = 0.82; s.rise = 0.4; s.wind = [0.4 * dir, 0];
+      for (let k = 0; k < N; k++) {
+        const u = 2 * Math.PI * (k / (N - 1) - dir * ph), crest = Math.cos(u), lift = 0.5 + 0.5 * crest;
+        put(s, -0.86 * vx + k * gap, 0.2 * vy * crest, Z * (0.8 + 0.35 * lift) * (1 + 0.05 * m.kick), 0.18 * dir * Math.sin(u), 0.7 + 0.3 * lift, MM);
+      }
+    },
+    whirlpool(s, m, c, L, e) {   // colour, and a whirlpool: two arms of mems drawn round and down into the one in the middle
+      psyOn(s, m, c, e); const d = side(c);
+      put(s, 0, 0, 1.0 * (1 + 0.08 * m.kick), -0.6 * d * e, 1, MM);
+      for (let arm = 0; arm < 2; arm++) for (let k = 0; k < 9; k++) {
+        const f = 1 - (k + (e * 0.5) % 1) / 9, r = 0.45 + 1.35 * f * f, a = d * (arm * Math.PI + f * 5.2 - e * 0.9);
+        put(s, r * Math.cos(a), r * Math.sin(a), 0.14 + 0.44 * f, a + Math.PI / 2, sm(0, 0.15, f) * sm(1, 0.85, f) * sm(0, 0.6, e), MM);
+      }
+    },
+    mandala(s, m, c, L, e) {   // the whirlpool folded into a mandala
+      this.whirlpool(s, m, c, L, e);
+      s.kal = 1; s.seg = [6, 8][Math.floor(c.r[3] * 2)];
+    },
+  },
+};
+// ---------- Shin · ש: ember fire, the mother letter of fire, three flames ----------
+const SHN = {
+  calm: ['kindling', 'three', 'crown', 'breath'],
+  groove: ['leap', 'three', 'crown', 'shalhevet', 'echo'],
+  psy: ['fountain', 'mandala', 'warp', 'field'],
+  drop: 'fountain',
+  weight: {leap: 2.5, three: 2, crown: 2, shalhevet: 1.5},
+  tint: [1.9, 0.78, 0.16],   // the fire burns ember orange at its edges
+  box: [-0.2148, -0.2227, 0.2148, 0.2383],
+  kinds: {
+    ...moves(SHIN),
+    kindling(s, m, c, L) {   // it burns low, and on every bar the fire catches and climbs, leaning one way and then the other
+      const n = Math.floor(L), f = L - n, d = (n % 2 ? -1 : 1) * side(c), up = sm(0, 0.35, f) * (1 - sm(0.55, 1, f));
+      s.heat = 0.6 + 0.4 * up; s.rise = 0.3 + 0.45 * up; s.turb = 0.35 + 0.3 * up; s.cool = 3 - 0.9 * up; s.wind = [0.7 * d * up, 0]; s.zoom = 1 + 0.05 * up;
+      put(s, 0, 0, BIG * (0.95 + 0.07 * up), 0.04 * d * up, 1, SHIN);
+    },
+    leap(s, m, c, L) {   // it leaps on every beat like a flame off a log and lands, higher on the bar's first beat
+      const per = c.mood === 'calm' ? 2 : 1, bt = (m.beatI % per + m.beatF) / per, j = Math.sin(Math.PI * sm(0, 0.55, bt)), hi = Math.floor(m.barF * 4) === 0 ? 1.4 : 1;
+      s.rise = 0.45 + 0.4 * j; s.heat = 0.8 + 0.15 * j;
+      put(s, 0, -0.06 + 0.16 * j * hi, BIG * (1 + 0.04 * j), 0, 1, SHIN, 1 - 0.06 * j);
+      ghosts(s, m, SHIN);
+    },
+    three(s, m, c, L) {   // shin is three flames: three of it in a row, right to left each leaping on its beat, all three on the fourth
+      const [vx] = m.view, F = L / c.bars, g = sm(0, 0.3, F) * (1 - sm(0.88, 1, F)), Z = BIG * (1 - 0.48 * g), gap = Math.min(0.72 * vx, Z * 0.5 + 0.15) * g;
+      const q = m.barF * 4, bi = Math.min(3, Math.floor(q)), bf = q - bi;
+      for (let k = 0; k < 3; k++) {
+        const j = bi === 3 || bi === k ? Math.sin(Math.PI * sm(0, 0.6, bf)) : 0, w = k === 1 ? 1 : g;
+        if (w > 0.01) put(s, (1 - k) * gap, 0.14 * j, Z * (1 + 0.06 * j), 0, w * (0.8 + 0.3 * j), SHIN, 1, w);
+      }
+      s.rise = 0.4 + 0.2 * (bi === 3 ? Math.sin(Math.PI * bf) : 0);
+    },
+    crown(s, m, c, L) {   // a crown of three small shins on an arc over it, and on every bar the next one flares
+      const F = L / c.bars, g = sm(0, 0.3, F) * (1 - sm(0.85, 1, F)), n = Math.floor(L), [vx, vy] = m.view;
+      const Z = BIG * (1 - 0.32 * g), y = -0.22 * vy * g, top = y + SHN.box[3] * Z, r = Math.min(0.5 * vx, 0.55 * vy) * g;
+      put(s, 0, y, Z, 0, 1, SHIN);
+      for (let k = 0; k < 3; k++) {
+        const a = Math.PI / 2 + (1 - k) * 0.75, on = n % 3 === k ? Math.sin(Math.PI * sm(0.05, 0.7, L - n)) : 0;
+        const yk = Math.min(vy - 0.16, top + 0.08 + r * (Math.sin(a) - 0.4));
+        if (g > 0.01) put(s, r * Math.cos(a), yk, 0.48 * (1 + 0.35 * on), 0.45 * (a - Math.PI / 2), g * (0.7 + 0.4 * on), SHIN, 1, g);
+      }
+    },
+    shalhevet(s, m, c, L) {   // shalhevet, a flame: the word written out of the shin a letter at a time, right to left, then gathered back into it
+      const W = [SHIN, LMD, HE, BT, TAV], n = W.length, beats = L * 4, B = c.bars * 4, per = c.mood === 'calm' ? 2 : 1;
+      const sz = Math.min(0.8, 2 * m.view[0] * 0.9 / (n * 0.4)), gap = sz * 0.4, x0 = (n - 1) / 2 * gap;
+      const tin = sm(0, 1, beats), tout = sm(B - 4, B - 1, beats);
+      s.heat = 0.8; s.rise = 0.45;
+      W.forEach((LT, k) => {
+        const slot = x0 - k * gap, x = k ? slot * (1 - 0.8 * tout) : slot * tin * (1 - tout);
+        const w = k ? sm(k * per, k * per + 0.8, beats) * (1 - sm(B - 4, B - 2.5, beats)) : 1;
+        const z = k ? sz : lerp(lerp(BIG, sz, tin), BIG, tout);
+        if (w > 0.01) put(s, x, 0, z, 0, w, LT, 1, w);
+      });
+    },
+    fountain(s, m, c, L, e) {   // colour, and the fire throws shins up out of the one in the middle like sparks, each curling away on the wind
+      psyOn(s, m, c, e); const d = side(c), [vx, vy] = m.view, N = 16;
+      put(s, 0, -0.1, 1.0 * (1 + 0.08 * m.kick), 0, 1, SHIN, 0.85 + 0.15 * Math.abs(Math.cos(e * 2.5)));
+      for (let k = 0; k < N; k++) {
+        const f = (k / N + e * 0.35) % 1, sx = ((k * 0.618) % 1) * 2 - 1, x = sx * f * vx * 0.95 + d * 0.25 * f * f, y = -0.1 + f * vy * 1.25 - 0.35 * f * f * Math.abs(sx);
+        const w = sm(0, 0.1, f) * sm(1, 0.8, f) * sm(0, 0.6, e);
+        if (w > 0.01) put(s, x, y, 0.2 + 0.32 * f, 0.8 * sx * f, w, SHIN);
+      }
+    },
+    mandala(s, m, c, L, e) {   // the fountain folded into a mandala
+      this.fountain(s, m, c, L, e);
+      s.kal = 1; s.seg = [6, 12][Math.floor(c.r[3] * 2)];
+    },
+  },
+};
+const PROGRAMS = {alef: ALEF, bet: BET, gimel: GIMEL, dalet: DALET, heh: HEH, mem: MEM, shin: SHN};
 
 function create(canvas, opts = {}) {
   const font = opts.font || '"Frank Ruhl Libre", "Times New Roman", serif';

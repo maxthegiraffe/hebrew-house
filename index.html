@@ -343,6 +343,8 @@ footer{padding:clamp(60px,12vh,140px) clamp(16px,6vw,96px) calc(140px + env(safe
         <button class="hx-l" data-l="gimel" role="radio" aria-checked="false" aria-label="Gimel" lang="he">ג</button>
         <button class="hx-l" data-l="dalet" role="radio" aria-checked="false" aria-label="Dalet" lang="he">ד</button>
         <button class="hx-l" data-l="heh" role="radio" aria-checked="false" aria-label="Heh" lang="he">ה</button>
+        <button class="hx-l" data-l="mem" role="radio" aria-checked="false" aria-label="Mem" lang="he">מ</button>
+        <button class="hx-l" data-l="shin" role="radio" aria-checked="false" aria-label="Shin" lang="he">ש</button>
       </div>
       <button class="pv-tool" id="clearbtn" aria-label="Full screen" title="Just the letter, full screen"><svg viewBox="0 0 16 16"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4"/></svg></button>
     </div>
@@ -514,9 +516,11 @@ const bands = new Float32Array(6);
 function qv(v, i, b) { if (i < 0 || i >= v.frames) return 0; const x = v.q[i * 3 + (b >> 1)]; return (b & 1 ? x & 15 : x >> 4) / 15; }
 
 // ---------- player ----------
-const LETTERS = ['alef', 'bet', 'gimel', 'dalet', 'heh'];
-const SONGS = [   // single songs; the hero starts with the first (HaDerech, 100 BPM), then Pera'i and Tof cut from Shevet
-  {id: 'haderech', title: 'HaDerech', he: 'הדרך', tempo: '100 BPM', len: 346, audio: 'https://maxthegiraffe.github.io/grateful-audio/haderech.mp3'},
+const LETTERS = ['alef', 'bet', 'gimel', 'dalet', 'heh', 'mem', 'shin'];
+const SONGS = [   // single songs; the hero starts with the first. The 100 BPM three each bring their mother letter: aleph, mem, shin
+  {id: 'haderech', title: 'HaDerech', he: 'הדרך', tempo: '100 BPM', len: 346, letter: 'alef', audio: 'https://maxthegiraffe.github.io/grateful-audio/haderech.mp3'},
+  {id: 'maamakim', title: "Ma'amakim", he: 'ממעמקים', tempo: '100 BPM', len: 384, letter: 'mem', audio: 'https://maxthegiraffe.github.io/grateful-audio/maamakim.mp3'},
+  {id: 'ruach', title: 'Ruach', he: 'רוח', tempo: '100 BPM', len: 346, letter: 'shin', audio: 'https://maxthegiraffe.github.io/grateful-audio/ruach.mp3'},
   {id: 'perai', title: "Pera'i", he: 'פראי', tempo: '125 BPM', len: 242, audio: 'https://maxthegiraffe.github.io/grateful-audio/perai.mp3'},
   {id: 'tof', title: 'Tof', he: 'תוף', tempo: '125 BPM', len: 242, audio: 'https://maxthegiraffe.github.io/grateful-audio/tof.mp3'},
 ];
@@ -553,10 +557,11 @@ function playSet(i, t) {
   if (t != null) seek(t);
   start();
 }
-function playSong(i, t) {   // one song, start to end, then the next
+function playSong(i, t, keepLetter) {   // one song, start to end, then the next; a song with its own letter brings it (unless a letter was just picked)
   const s = SONGS[i];
   if (cur.kind !== 'song' || cur.i !== i) {
     cur = {kind: 'song', i, s, track: -1};
+    if (s.letter && !keepLetter && LETTERS.includes(s.letter) && s.letter !== letter) { letter = s.letter; document.querySelectorAll('.hx-l').forEach(b => b.setAttribute('aria-checked', b.dataset.l === letter)); }
     viz = null; bi = 0;
     loadViz(s).then(v => { if (cur.s === s) viz = v; });
     audio.src = s.audio;
@@ -887,7 +892,7 @@ function setLetter(l) {
   document.querySelectorAll('.hx-l').forEach(b => b.setAttribute('aria-checked', b.dataset.l === l));
   otUse(cur.kind ? cur.s : (otSet || SONGS[0]));
 }
-document.querySelectorAll('.hx-l').forEach(b => { b.setAttribute('aria-checked', b.dataset.l === letter); b.addEventListener('click', () => { setLetter(b.dataset.l); if (!cur.kind) playSong(0, 0); }); });
+document.querySelectorAll('.hx-l').forEach(b => { b.setAttribute('aria-checked', b.dataset.l === letter); b.addEventListener('click', () => { setLetter(b.dataset.l); if (!cur.kind) playSong(0, 0, true); }); });
 $('#hxprev').addEventListener('click', () => step(-1));
 $('#hxnext').addEventListener('click', () => step(1));
 $('#hxset').addEventListener('click', () => cur.kind === 'set' && cur.i + 1 >= SETS.length ? playSong(0, 0) : playSet(cur.kind === 'set' ? cur.i + 1 : 0, null));   // songs, then each set, then back to the songs
