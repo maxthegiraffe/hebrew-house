@@ -114,7 +114,7 @@ precision highp float;
 in vec2 vUv;
 uniform sampler2D uHeat;
 uniform vec2 uRes, uCenter;
-uniform float uZoom, uT, uPsy, uHue, uKal, uSeg, uFlash, uFade, uKick, uPx, uLetter, uReveal;
+uniform float uZoom, uT, uPsy, uHue, uKal, uSeg, uFlash, uFade, uKick, uBass, uPx, uLetter, uReveal;
 uniform vec3 uTint;
 uniform vec4 uE[${NE}];
 uniform vec4 uE2[${NE}];
@@ -160,6 +160,7 @@ void main() {
   c = mix(c, psy, uPsy * (1. - .8 * body));   // the colour is in the flames; the letters stay white fire, so they always read
   vec2 e = (vUv - uCenter) * asp;
   c *= 1. - .35 * smoothstep(.3, 1.3, dot(e, e));
+  c *= .92 + .16 * uBass;   // the bass itself, as the song plays it
   c = mix(c, vec3(1.), uFlash);
   c += (fract(sin(dot(vUv * uRes + fract(uT) * 91., vec2(12.9898, 78.233))) * 43758.5453) - .5) * .025;
   o = vec4(c * uFade, 1.);
@@ -254,7 +255,11 @@ function readViz(v, tempo) {
   else if (tempo && bpm < tempo * 0.7) bpm *= 2;   // a tracker that heard half time: the kicks are right, the beat is twice as fast
   const nf = q.length / 3, fps = v.fps, P = 60 / bpm;
   const at = (j, b) => j < 0 || j >= nf ? 0 : (b & 1 ? q[j * 3 + (b >> 1)] & 15 : q[j * 3 + (b >> 1)] >> 4) / 15;
-  const band = (t, b) => { const f = t * fps, i = Math.floor(f), r = f - i; return at(i, b) * (1 - r) + at(i + 1, b) * r; };
+  const band = (t, b) => { const f = t * fps - 0.5, i = Math.floor(f), r = f - i; return at(i, b) * (1 - r) + at(i + 1, b) * r; };   // frame i is the sound around (i + .5) / fps
+  // the song itself (hh_hits.py): every hit, kicks and bass notes, how hard it lands, and the bass level at 60 fps
+  const H = [], HV = []; if (v.hits) { let a = 0; v.hits.forEach((d, i) => { a += d; H.push(a / 1000); HV.push(v.hv[i] / 9); }); }
+  const lo = v.lo ? Uint8Array.from(atob(v.lo), ch => ch.charCodeAt(0)) : null, lofps = v.lofps || 60;
+  const bass = t => { if (!lo) return band(t, 0); const f = Math.max(0, t * lofps), i = Math.floor(f), r = f - i; return ((lo[i] || 0) * (1 - r) + (lo[i + 1] || 0) * r) / 255; };
   // the grid: every kick, and through the breaks the same pulse carried on, landing on the kick that comes back
   const G = [], R = [];
   if (K.length) for (let x = K[0] - P; x > 0; x -= P) { G.unshift(x); R.unshift(0); }
@@ -278,7 +283,7 @@ function readViz(v, tempo) {
   });
   for (let i = 1; i + 1 < bars.length; i++) if (bars[i - 1].groove === bars[i + 1].groove) bars[i].groove = bars[i - 1].groove;   // one odd bar is not a section
   const es = bars.filter(b => b.groove).map(b => b.e).sort((a, b) => a - b);
-  return {G, K, P, len: v.len, band, bars, barT: bars.map(b => b.t), med: es[es.length >> 1] || 0.5};
+  return {G, K, P, H, HV, bass, len: v.len, band, bars, barT: bars.map(b => b.t), med: es[es.length >> 1] || 0.5};
 }
 function vmusic(V, t) {   // what the set is doing at t
   const gi = Math.max(0, lastLE(V.G, t)), p = gi + 1 < V.G.length ? V.G[gi + 1] - V.G[gi] : V.P;
@@ -286,14 +291,18 @@ function vmusic(V, t) {   // what the set is doing at t
   const ki = lastLE(V.K, t), kicks = [];
   for (let j = 0; j < 6 && ki - j >= 0; j++) kicks.push(t - V.K[ki - j]);
   const bands = [0, 1, 2, 3, 4, 5].map(b => V.band(t, b)), energy = bands.reduce((a, b) => a + b) / 6;
-  const kickAt = x => { const i = lastLE(V.K, x); return i >= 0 && x - V.K[i] < 1 ? Math.exp(-(x - V.K[i]) / 0.12) * (0.6 + 0.4 * V.band(V.K[i], 0)) : 0; };
+  const kickAt = V.H.length ? x => {   // the bump: every real hit, as hard as it lands
+    let k = 0;
+    for (let i = lastLE(V.H, x), j = 0; i >= 0 && j < 4; i--, j++) { const a = x - V.H[i]; if (a > 0.6) break; k = Math.max(k, Math.exp(-a / 0.1) * (0.3 + 0.7 * V.HV[i])); }
+    return k;
+  } : x => { const i = lastLE(V.K, x); return i >= 0 && x - V.K[i] < 1 ? Math.exp(-(x - V.K[i]) / 0.12) * (0.6 + 0.4 * V.band(V.K[i], 0)) : 0; };
   const kick = kickAt(t), kickA = kickAt(t + SWELL);   // kick: what you see at once; kickA: the push the flames answer a little later
   const groove = V.bars[bi].groove, beatF = Math.min(1, (t - V.G[gi]) / p), sparks = [];
   for (let i = 0, n = gi * 2 + (beatF >= 0.5 ? 1 : 0); i < 6 && n - i >= 0; i++) {   // embers on the eighths, more of them when the air band is full
     const x = n - i, te = V.G[x >> 1] + (x & 1) * p / 2;
     sparks.push([x, t - te, groove ? 0.3 + 0.8 * bands[5] : 0.15 * bands[5]]);
   }
-  return {t, p, beatI: gi, beatF, barI: bi, barF: Math.min(1, (t - V.barT[bi]) / (b1 - V.barT[bi])), kick, kicks, bands, energy, level: energy / V.med, groove, sparks, kickA};
+  return {t, p, beatI: gi, beatF, barI: bi, barF: Math.min(1, (t - V.barT[bi]) / (b1 - V.barT[bi])), kick, kicks, bands, energy, level: energy / V.med, groove, sparks, kickA, bass: V.bass(t)};
 }
 // the set as chapters of four bars: the breaks get the calm moves and build into the kick, the drops turn psychedelic,
 // and through a long groove white fire and colour take turns. Planned once from the whole set, so any second can be drawn.
@@ -695,7 +704,7 @@ function create(canvas, opts = {}) {
     gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, atlas); gl.uniform1i(u.uAtlas, 1);
     gl.uniform2f(u.uRes, canvas.width, canvas.height); gl.uniform2f(u.uCenter, cx, cy); gl.uniform1f(u.uZoom, zoom); gl.uniform1f(u.uT, t);
     gl.uniform1f(u.uPsy, s.psy); gl.uniform1f(u.uLetter, s.letter); gl.uniform4f(u.uCut, ...eng.cut); gl.uniform1f(u.uReveal, s.reveal); gl.uniform4fv(u.uE, EU); gl.uniform4fv(u.uE2, EU2); gl.uniform3f(u.uTint, ...(s.tint || [1, 1, 1])); gl.uniform1f(u.uHue, s.hue); gl.uniform1f(u.uKal, s.kal); gl.uniform1f(u.uSeg, s.seg || 8); gl.uniform1f(u.uFlash, (opts.reduce ? 0.25 : 1) * s.flash);
-    gl.uniform1f(u.uFade, s.fade * (eng.fadeIn === false ? 1 : sm(0, 0.6, m.life))); gl.uniform1f(u.uKick, m.kick); gl.uniform1f(u.uPx, 1 / canvas.height);
+    gl.uniform1f(u.uFade, s.fade * (eng.fadeIn === false ? 1 : sm(0, 0.6, m.life))); gl.uniform1f(u.uKick, m.kick); gl.uniform1f(u.uBass, m.bass || 0); gl.uniform1f(u.uPx, 1 / canvas.height);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     eng.last = s;
   }
