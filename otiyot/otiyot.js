@@ -600,7 +600,124 @@ const GIMEL = {
     },
   },
 };
-const PROGRAMS = {alef: ALEF, bet: BET, gimel: GIMEL};
+// ---------- Dalet · ד: lapis fire, the door, the four corners, the humble one who receives ----------
+const R2 = (x, y, a) => [x * Math.cos(a) - y * Math.sin(a), x * Math.sin(a) + y * Math.cos(a)];
+const DALET = {
+  calm: ['four', 'bow', 'receive', 'breath'],
+  groove: ['four', 'steps', 'bow', 'receive', 'echo'],
+  psy: ['compass', 'mandala', 'warp', 'field'],
+  drop: 'compass',
+  weight: {four: 3, steps: 2, bow: 1.5},
+  tint: [0.6, 0.9, 1.7],   // lapis: the fire burns blue at its edges
+  // the dalet as the atlas draws it, in glyph cell units: its ink box; its corner is the top right, its foot the bottom right
+  box: [-0.1445, -0.2305, 0.1445, 0.2383],
+  kinds: {
+    ...moves(DLT),
+    four(s, m, c, L) {   // four dalets, corner out, close into one square (dalet is four: the four corners of the world), and the square turns a quarter on the bar
+      const f = L / c.bars, d = side(c), per = c.mood === 'calm' ? 2 : 1, n = Math.floor(L / per);
+      const Z = BIG * 0.62, [, , cx, cy] = DALET.box, g = sm(0, 0.35, f) * (1 - sm(0.85, 1, f));
+      const S = lerp(0.38 * Z + 0.42 * Math.min(...m.view), 0.38 * Z, g) * (1 + 0.05 * m.kick), turn = d * Math.PI / 2 * (n + sm(0.1, 0.6, L / per - n));
+      for (let k = 0; k < 4; k++) {
+        const a = turn + k * Math.PI / 2, w = k ? sm(0, 0.25, f) * (1 - sm(0.9, 1, f)) : 1, [x, y] = R2(S - cx * Z, S - cy * Z, a);
+        if (w > 0.01) put(s, x, y, Z, a, w, DLT, 1, w);
+      }
+      s.zoom = 1 - 0.06 * g; s.tint = [0.95, 1, 1.1];
+    },
+    steps(s, m, c, L) {   // a stair of dalets going down, the next step lit on every beat: dalet lowers itself
+      const [vx, vy] = m.view, N = 5, [x0, y0, x1, y1] = DALET.box;
+      const Z = Math.min(BIG * 0.6, 1.5 * vx / ((x1 - x0) * (N - 1) + 0.4), 1.5 * vy / ((y1 - y0) * 0.75 * (N - 1) + 0.5));   // big, and the whole stair in view
+      const dx = -(x1 - x0) * Z * 1.05, dy = -(y1 - y0) * Z * 0.75, beats = L * 4, per = (c.bars * 4 - 1) / N;
+      const sx = -dx * (N - 1) / 2, sy = -dy * (N - 1) / 2;
+      s.heat = 0.8; s.rise = 0.4;
+      for (let k = 0; k < N; k++) {
+        const on = sm(k * per, k * per + 0.4, beats) * (1 - sm(c.bars * 4 - 1, c.bars * 4, beats)), hit = Math.exp(-Math.max(0, beats - k * per) * 2.2);
+        if (on > 0.01) put(s, sx + k * dx, sy + k * dy, Z * (1 + 0.12 * hit), 0, on, DLT, 1, on);
+      }
+      s.zoom = 1 + 0.04 * Math.sin(Math.PI * L / c.bars);
+    },
+    bow(s, m, c, L) {   // it bows on its foot, low, on the bar, and rises again
+      const per = c.mood === 'calm' ? 2 : 1, n = Math.floor(L / per), f = L / per - n, [, y0, x1] = DALET.box;
+      const a = 0.42 * Math.sin(Math.PI * sm(0.05, 0.75, f)), [fx, fy] = [x1 * BIG, y0 * BIG], [rx, ry] = R2(fx, fy, a);
+      s.wind = [-0.5 * a, 0]; s.heat = 0.82 - 0.12 * a; s.zoom = 1 + 0.05 * a;
+      put(s, fx - rx, fy - ry, BIG, a, 1, DLT);
+      if (c.mood !== 'calm') ghosts(s, m, DLT, 1, 0.25 * a);
+    },
+    receive(s, m, c, L) {   // the gimel runs to it with something to give: it arrives, and the dalet burns brighter for it
+      const [vx] = m.view, ZD = BIG * 0.85, ZG = BIG * 0.5, hops = Math.max(1, c.bars - 1), n = Math.floor(L), hf = L - n;
+      const xD = -vx * 0.18, xEnd = xD + ZD * 0.33 + ZG * 0.2, x0 = vx + 0.3, step = (x0 - xEnd) / hops;
+      const k = Math.min(hops, n + sm(0.05, 0.6, hf)), hop = n < hops ? Math.sin(Math.PI * sm(0.05, 0.6, hf)) : 0, got = sm(hops, hops + 0.5, L);
+      s.heat = 0.78 + 0.3 * got; s.rise = 0.42 + 0.3 * got;
+      put(s, xD, 0, ZD * (1 + 0.08 * got), 0, 0.85 + 0.3 * got, DLT);
+      put(s, x0 - step * k, -ZD * 0.12 + 0.35 * hop, ZG, 0.2 * hop, 1 - 0.5 * got, GML);
+    },
+    compass(s, m, c, L, e) {   // colour, and four arms of dalets pouring out of it, one to each corner of the world
+      psyOn(s, m, c, e); const d = side(c);
+      put(s, 0, 0, 1.0 * (1 + 0.08 * m.kick), d * Math.PI / 2 * Math.floor(m.beatI / 4), 1, DLT);
+      for (let arm = 0; arm < 4; arm++) for (let k = 0; k < 6; k++) {
+        const f = (k + (e * 0.55) % 1) / 6, r = 0.45 + 1.3 * f * f, a = d * (arm * Math.PI / 2 + f * 4 + e * 0.6);
+        put(s, r * Math.cos(a), r * Math.sin(a), 0.18 + 0.4 * f, a - Math.PI / 4, sm(0, 0.15, f) * sm(0, 0.6, e), DLT);
+      }
+    },
+    mandala(s, m, c, L, e) {   // the compass folded into a mandala of four and eight
+      this.compass(s, m, c, L, e);
+      s.kal = 1; s.seg = [4, 8][Math.floor(c.r[3] * 2)];
+    },
+  },
+};
+// ---------- Heh · ה: rose fire, the breath, the window, the letter the world was made with ----------
+const HEH = {
+  calm: ['exhale', 'leg', 'five', 'breath'],
+  groove: ['leg', 'five', 'exhale', 'echo', 'ring'],
+  psy: ['bloom', 'mandala', 'warp', 'field'],
+  drop: 'bloom',
+  weight: {leg: 3, exhale: 2, five: 1.5},
+  tint: [1.6, 0.75, 1.15],   // the fire burns rose at its edges
+  // the heh as the atlas draws it, in glyph cell units: its loose left leg sits where dot(q, cut.xy) > cut.z
+  // (the widest straight gap between it and the roof, measured by glyphs.mjs); the leg's middle
+  cut: [-0.8192, -0.5736, 0.0627, 0], leg: [-0.1173, -0.1104],
+  kinds: {
+    ...moves(HE),
+    leg(s, m, c, L) {   // its loose leg steps away from the roof on the bar and comes back: the opening a person can always return through
+      const per = c.mood === 'calm' ? 2 : 1, n = Math.floor(L / per), f = L / per - n, d = n % 2 ? 1 : -1, [nx, ny] = HEH.cut, [lx, ly] = HEH.leg;
+      const g = sm(0.03, 0.32, f) * (1 - sm(0.62, 0.92, f)), sep = (0.16 + 0.03 * m.kick) * g, w = d * 0.35 * g;
+      const [rx, ry] = R2(lx * BIG, ly * BIG, w);
+      put(s, 0, 0, BIG, 0, 1, HE + 96);   // the roof and the right leg
+      put(s, lx * BIG - rx + nx * sep * BIG, ly * BIG - ry + ny * sep * BIG + 0.12 * Math.sin(Math.PI * g) * BIG * 0.2, BIG, w, 1, HE + 32);
+      s.tint = [1, 0.96, 1.05]; s.zoom = 1 + 0.04 * g;
+    },
+    exhale(s, m, c, L) {   // it breathes out, a breath every two bars, and small hehs leave through its open floor and rise away on the fire
+      const br = 0.5 - 0.5 * Math.cos(Math.PI * L), out = Math.max(0, Math.sin(Math.PI * L)), d = side(c), N = 9, [vx, vy] = m.view;
+      s.heat = 0.62 + 0.25 * br; s.rise = 0.35 + 0.2 * out; s.turb = 0.35; s.cool = 3 - 0.7 * br; s.zoom = 1 + 0.06 * br;
+      put(s, 0, 0, BIG * (0.95 + 0.07 * br), 0, 1, HE);
+      for (let k = 0; k < N; k++) {
+        const u = (L / 2 + k / N) % 1, sx = k % 2 ? 1 : -1, x = (0.02 + sx * 0.9 * vx * u * (0.5 + 0.5 * ((k * 0.37) % 1))) * 1, y = -0.42 * BIG - 0.5 * u + 1.9 * vy * u * u;
+        const w = sm(0, 0.12, u) * sm(1, 0.7, u) * sm(0, 0.5, L);
+        if (w > 0.01) put(s, x, y, 0.28 + 0.12 * (1 - u), d * sx * 0.6 * u, w, HE, 1, w);
+      }
+    },
+    five(s, m, c, L) {   // heh is five: five of them round a circle, turning, and on every bar the next one turns over
+      const f = L / c.bars, n = Math.floor(L), d = side(c), g = sm(0, 0.3, f) * (1 - sm(0.85, 1, f));
+      const rot = d * 0.12 * L, r = 0.62 * Math.min(...m.view) * g * (1 + 0.06 * m.kick), Z = BIG * (1 - 0.6 * g);
+      for (let j = 0; j < 5; j++) {
+        const a = rot + j * 2 * Math.PI / 5 + Math.PI / 2, w = j ? g : 1, fl = n % 5 === j ? Math.cos(2 * Math.PI * sm(0.05, 0.7, L - n)) : 1;
+        if (w > 0.01) put(s, r * Math.cos(a), r * Math.sin(a), Z, 0, w, HE, Math.sign(fl || 1) * Math.max(0.04, Math.abs(fl)), w);
+      }
+    },
+    bloom(s, m, c, L, e) {   // colour, and a flower of five petals: arms of hehs opening out of the one in the middle
+      psyOn(s, m, c, e); const d = side(c);
+      put(s, 0, 0, 1.0 * (1 + 0.08 * m.kick), 0.12 * d * Math.sin(e * 0.7), 1, HE);
+      for (let arm = 0; arm < 5; arm++) for (let k = 0; k < 5; k++) {
+        const f = (k + (e * 0.5) % 1) / 5, r = 0.45 + 1.25 * f * f, a = d * (arm * 2 * Math.PI / 5 + f * 2.6 + e * 0.45);
+        put(s, r * Math.cos(a), r * Math.sin(a), 0.2 + 0.4 * f, a - Math.PI / 2, sm(0, 0.15, f) * sm(0, 0.6, e), HE);
+      }
+    },
+    mandala(s, m, c, L, e) {   // the flower folded into a mandala of five and ten
+      this.bloom(s, m, c, L, e);
+      s.kal = 1; s.seg = [5, 10][Math.floor(c.r[3] * 2)];
+    },
+  },
+};
+const PROGRAMS = {alef: ALEF, bet: BET, gimel: GIMEL, dalet: DALET, heh: HEH};
 
 function create(canvas, opts = {}) {
   const font = opts.font || '"Frank Ruhl Libre", "Times New Roman", serif';

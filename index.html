@@ -119,6 +119,12 @@ html.lit .hero-copy{opacity:0;transform:translateY(18px);pointer-events:none}
 .hx-l:hover{border-color:var(--acc)}
 html.clear .hx{bottom:calc(20px + env(safe-area-inset-bottom))}
 html.clear.still .hx{opacity:0}
+@media (max-width:640px){   /* a phone: the song on top, the five letters in a row under it */
+  .hx{flex-wrap:wrap;justify-content:center;border-radius:24px;row-gap:2px;width:max-content}
+  .hx-now{width:clamp(150px,52vw,240px)}
+  #clearbtn{order:1}
+  .hx-let{order:2;flex-basis:100%;justify-content:center;border-left:0;border-top:1px solid var(--faint);padding:5px 0 0}
+}
 html.clear,html.clear body{overflow:hidden}
 html.clear .hero{position:fixed;inset:0;z-index:70;height:100%;min-height:0;background:#000}
 html.clear .hero-copy,html.clear .hero::before{display:none}
@@ -324,6 +330,9 @@ footer{padding:clamp(60px,12vh,140px) clamp(16px,6vw,96px) calc(140px + env(safe
       <div class="hx-let" role="radiogroup" aria-label="Letter">
         <button class="hx-l" data-l="alef" role="radio" aria-checked="true" aria-label="Aleph" lang="he">א</button>
         <button class="hx-l" data-l="bet" role="radio" aria-checked="false" aria-label="Bet" lang="he">ב</button>
+        <button class="hx-l" data-l="gimel" role="radio" aria-checked="false" aria-label="Gimel" lang="he">ג</button>
+        <button class="hx-l" data-l="dalet" role="radio" aria-checked="false" aria-label="Dalet" lang="he">ד</button>
+        <button class="hx-l" data-l="heh" role="radio" aria-checked="false" aria-label="Heh" lang="he">ה</button>
       </div>
       <button class="pv-tool" id="clearbtn" aria-label="Full screen" title="Just the letter, full screen"><svg viewBox="0 0 16 16"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4"/></svg></button>
     </div>
@@ -495,7 +504,7 @@ const bands = new Float32Array(6);
 function qv(v, i, b) { if (i < 0 || i >= v.frames) return 0; const x = v.q[i * 3 + (b >> 1)]; return (b & 1 ? x & 15 : x >> 4) / 15; }
 
 // ---------- player ----------
-const LETTERS = ['alef', 'bet'];
+const LETTERS = ['alef', 'bet', 'gimel', 'dalet', 'heh'];
 const SONGS = [   // single songs, cut from Shevet; the hero starts with the first
   {id: 'perai', title: "Pera'i", he: 'פראי', tempo: '125 BPM', len: 242, audio: 'https://maxthegiraffe.github.io/grateful-audio/perai.mp3'},
   {id: 'tof', title: 'Tof', he: 'תוף', tempo: '125 BPM', len: 242, audio: 'https://maxthegiraffe.github.io/grateful-audio/tof.mp3'},
