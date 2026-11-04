@@ -790,7 +790,7 @@ function drawWheel(dt) {
 
 // ---------- the hero: otiyot/otiyot.js draws the playing set live, as a letter made of fire ----------
 const heroEl = $('#hero'), otEl = $('#otiyot');
-let ot = null, otSet = null, otQ = 1, otAvg = 16, otN = 0, otClock = 0, otIdle = 0, otC = [0.5, 0.5], otZ = 1;
+let ot = null, otSet = null, otQ = 1, otAvg = 16, otN = 0, otT = 0, otClock = 0, otIdle = 0, otC = [0.5, 0.5], otZ = 1;
 const vizUrl = s => `viz/${s.id}.json`, tempoOf = s => parseFloat(s.tempo) || 0;
 try { ot = window.Otiyot ? Otiyot.create(otEl, {viz: vizUrl(SONGS[0]), tempo: tempoOf(SONGS[0]), letter, reduce}) : null; } catch (e) { ot = null; }
 if (ot) { ot.fadeIn = false; ot.ready.then(() => { if (!otSet) otSet = SONGS[0]; placeOt(); ot.center = otC.slice(); ot.zoom = otZ; }, () => { ot = null; }); }
@@ -805,7 +805,8 @@ function placeOt() {
   otC = lit ? [0.5, 0.5] : wide ? [0.68, 0.5] : [0.5, 0.64];   // beside the words, or above them, until it plays
   otZ = lit ? 1 : wide ? 0.9 : 0.78;
   const cw = otEl.clientWidth || innerWidth, ch = otEl.clientHeight || innerHeight;
-  ot.scale = Math.min(window.devicePixelRatio || 1, Math.sqrt(0.7e6 / (cw * ch))) * otQ;
+  const budget = innerWidth > 900 ? 2.4e6 : 1.8e6;   // pixels drawn (it was 0.7 MP, blurry on a laptop); the fire's own field stays the same size
+  ot.scale = Math.min(window.devicePixelRatio || 1, Math.sqrt(budget / (cw * ch))) * otQ;
 }
 function drawOt(dt) {
   const k = Math.min(1, dt * 2.5);
@@ -815,8 +816,12 @@ function drawOt(dt) {
     if (audio.paused) otClock = t; else { otClock += dt; if (Math.abs(otClock - t) > 0.08) otClock = t; else otClock += (t - otClock) * 0.08; }
     ot.idle = false; ot.frame(otClock, dt);
   } else { otIdle += dt; ot.idle = !cur.kind; ot.frame(((otSet && otSet.hot) || 0) + otIdle, dt); }   // nothing playing yet: the letter breathes
-  otAvg += (dt * 1000 - otAvg) * 0.05;   // too slow for this screen: draw fewer pixels
-  if (++otN > 90 && otAvg > 24 && otQ > 0.4) { otQ *= 0.8; otN = 0; placeOt(); }
+  // too slow for this screen: draw fewer pixels; fast again: sharpen back. A stall (loading, a hidden tab) doesn't count.
+  const tNow = performance.now(), ms = tNow - (otT || tNow); otT = tNow;   // the real frame time (dt is capped at 50 ms)
+  if (ms > 120 || document.hidden) { otN = 0; otAvg = 16.7; return; }   // a stall (loading, switching, a hidden tab) is not a slow screen
+  otAvg += (ms - otAvg) * 0.05;
+  if (++otN > 150 && otAvg > 25 && otQ > 0.5) { otQ = Math.max(0.5, otQ * 0.85); otN = 0; placeOt(); }   // under ~40 fps: a little softer
+  else if (otN > 180 && otAvg < 19 && otQ < 1) { otQ = Math.min(1, otQ * 1.12); otN = 0; placeOt(); }   // smooth again: sharpen back
 }
 function hxLabel() {   // a song, or the set and its song
   if (cur.kind !== 'set') { const s = cur.kind === 'song' ? cur.s : SONGS[0]; $('#hxsetname').textContent = 'Songs'; $('#hxtrk').textContent = `${s.title} · ${s.he}`; return; }

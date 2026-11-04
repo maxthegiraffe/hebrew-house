@@ -753,7 +753,7 @@ function create(canvas, opts = {}) {
   function targets() {
     const w = Math.max(2, Math.round(canvas.clientWidth * eng.scale)), h = Math.max(2, Math.round(canvas.clientHeight * eng.scale));
     if (opts.size) [canvas.width, canvas.height] = opts.size; else if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
-    const sw = Math.round(canvas.width * 0.75), sh = Math.round(canvas.height * 0.75);
+    const k = Math.min(0.75, Math.sqrt(0.39375e6 / (canvas.width * canvas.height))), sw = Math.round(canvas.width * k), sh = Math.round(canvas.height * k);   // the fire keeps the field it was tuned on (~0.39 MP) however sharp the letters draw
     if (sw === hw && sh === hh) return;
     hw = sw; hh = sh;
     heat.forEach(t => gl.deleteTexture(t));
@@ -821,7 +821,7 @@ function create(canvas, opts = {}) {
     gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, atlas); gl.uniform1i(u.uAtlas, 1);
     gl.uniform2f(u.uRes, canvas.width, canvas.height); gl.uniform2f(u.uCenter, cx, cy); gl.uniform1f(u.uZoom, zoom); gl.uniform1f(u.uT, t);
     gl.uniform1f(u.uPsy, s.psy); gl.uniform1f(u.uLetter, s.letter); gl.uniform4f(u.uCut, ...eng.cut); gl.uniform1f(u.uReveal, s.reveal); gl.uniform4fv(u.uE, EU); gl.uniform4fv(u.uE2, EU2); gl.uniform3f(u.uTint, ...(s.tint || [1, 1, 1])); gl.uniform1f(u.uHue, s.hue); gl.uniform1f(u.uKal, s.kal); gl.uniform1f(u.uSeg, s.seg || 8); gl.uniform1f(u.uFlash, (opts.reduce ? 0.25 : 1) * s.flash);
-    gl.uniform1f(u.uFade, s.fade * (eng.fadeIn === false ? 1 : sm(0, 0.6, m.life))); gl.uniform1f(u.uKick, m.kick); gl.uniform1f(u.uBass, m.bass || 0); gl.uniform1f(u.uPx, 1 / canvas.height);
+    gl.uniform1f(u.uFade, s.fade * (eng.fadeIn === false ? 1 : sm(0, 0.6, m.life))); gl.uniform1f(u.uKick, m.kick); gl.uniform1f(u.uBass, m.bass || 0); gl.uniform1f(u.uPx, 0.75 / hh);   // the glow reaches as far across the screen at any sharpness
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     eng.last = s;
   }
