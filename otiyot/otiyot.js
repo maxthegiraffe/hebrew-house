@@ -160,7 +160,6 @@ void main() {
   c = mix(c, psy, uPsy * (1. - .8 * body));   // the colour is in the flames; the letters stay white fire, so they always read
   vec2 e = (vUv - uCenter) * asp;
   c *= 1. - .35 * smoothstep(.3, 1.3, dot(e, e));
-  c *= 1. + uKick * (.1 + .15 * uPsy);   // every kick, at once
   c = mix(c, vec3(1.), uFlash);
   c += (fract(sin(dot(vUv * uRes + fract(uT) * 91., vec2(12.9898, 78.233))) * 43758.5453) - .5) * .025;
   o = vec4(c * uFade, 1.);
@@ -245,7 +244,7 @@ function alef18(t, m) {
 // ---------- any set: the music as hebrew.house already measures it (kicks, six bands at 5 fps) ----------
 const lastLE = (arr, t) => { let lo = 0, hi = arr.length; while (lo < hi) { const m = (lo + hi) >> 1; if (arr[m] <= t) lo = m + 1; else hi = m; } return lo - 1; };
 const hashStr = str => { let h = 2166136261; for (const ch of str) h = Math.imul(h ^ ch.charCodeAt(0), 16777619); return h >>> 0; };
-const LEAD = 0.04;   // seconds: the tracker marks a kick's peak, a little after you hear it
+const SWELL = 0.08;   // seconds: the fire takes this long to swell, so its push starts that much before the kick and peaks on it
 const rng = seed => () => { seed = (seed + 0x6D2B79F5) | 0; let x = Math.imul(seed ^ (seed >>> 15), 1 | seed); x = (x + Math.imul(x ^ (x >>> 7), 61 | x)) ^ x; return ((x ^ (x >>> 14)) >>> 0) / 4294967296; };
 function readViz(v, tempo) {
   const raw = atob(v.bands), q = new Uint8Array(raw.length);
@@ -256,15 +255,6 @@ function readViz(v, tempo) {
   const nf = q.length / 3, fps = v.fps, P = 60 / bpm;
   const at = (j, b) => j < 0 || j >= nf ? 0 : (b & 1 ? q[j * 3 + (b >> 1)] & 15 : q[j * 3 + (b >> 1)] >> 4) / 15;
   const band = (t, b) => { const f = t * fps, i = Math.floor(f), r = f - i; return at(i, b) * (1 - r) + at(i + 1, b) * r; };
-  // the kick that comes back after a break often lands under a crash the tracker can't hear: if the sub is already full
-  // a beat before the first kick it found, that beat is the downbeat
-  for (let i = 1; i < K.length; i++) {
-    if (K[i] - K[i - 1] < 8 * P) continue;
-    const c = K[i] - P; let post = 0;
-    for (let x = 0.2; x < 2; x += 0.2) post += band(K[i] + x, 0) / 9;
-    if (post > 0.3 && band(c + 0.06, 0) >= 0.6 * post && band(c - 0.25, 0) < 0.35 * post && c - K[i - 1] > 4 * P) { K.splice(i, 0, c); i++; }
-  }
-  for (let i = 0; i < K.length; i++) K[i] -= LEAD;   // a touch early, so the fire's answer lands on the kick, not after it
   // the grid: every kick, and through the breaks the same pulse carried on, landing on the kick that comes back
   const G = [], R = [];
   if (K.length) for (let x = K[0] - P; x > 0; x -= P) { G.unshift(x); R.unshift(0); }
@@ -296,13 +286,14 @@ function vmusic(V, t) {   // what the set is doing at t
   const ki = lastLE(V.K, t), kicks = [];
   for (let j = 0; j < 6 && ki - j >= 0; j++) kicks.push(t - V.K[ki - j]);
   const bands = [0, 1, 2, 3, 4, 5].map(b => V.band(t, b)), energy = bands.reduce((a, b) => a + b) / 6;
-  const kick = ki >= 0 && t - V.K[ki] < 1 ? Math.exp(-(t - V.K[ki]) / 0.12) * (0.6 + 0.4 * V.band(V.K[ki], 0)) : 0;
+  const kickAt = x => { const i = lastLE(V.K, x); return i >= 0 && x - V.K[i] < 1 ? Math.exp(-(x - V.K[i]) / 0.12) * (0.6 + 0.4 * V.band(V.K[i], 0)) : 0; };
+  const kick = kickAt(t), kickA = kickAt(t + SWELL);   // kick: what you see at once; kickA: the push the flames answer a little later
   const groove = V.bars[bi].groove, beatF = Math.min(1, (t - V.G[gi]) / p), sparks = [];
   for (let i = 0, n = gi * 2 + (beatF >= 0.5 ? 1 : 0); i < 6 && n - i >= 0; i++) {   // embers on the eighths, more of them when the air band is full
     const x = n - i, te = V.G[x >> 1] + (x & 1) * p / 2;
     sparks.push([x, t - te, groove ? 0.3 + 0.8 * bands[5] : 0.15 * bands[5]]);
   }
-  return {t, p, beatI: gi, beatF, barI: bi, barF: Math.min(1, (t - V.barT[bi]) / (b1 - V.barT[bi])), kick, kicks, bands, energy, level: energy / V.med, groove, sparks};
+  return {t, p, beatI: gi, beatF, barI: bi, barF: Math.min(1, (t - V.barT[bi]) / (b1 - V.barT[bi])), kick, kicks, bands, energy, level: energy / V.med, groove, sparks, kickA};
 }
 // the set as chapters of four bars: the breaks get the calm moves and build into the kick, the drops turn psychedelic,
 // and through a long groove white fire and colour take turns. Planned once from the whole set, so any second can be drawn.
@@ -351,7 +342,7 @@ function director(P, V, C = V.plan) {
   const draw = (c, t, m) => {
     const s = BASE(), L = Math.max(0, m.barI - c.a + m.barF);
     P.kinds[c.kind](s, m, c, Math.min(L, c.bars), (t - c.t0));
-    s.rise += (s.psy ? 0.25 : 0.35) * m.kick;
+    s.rise += (s.psy ? 0.25 : 0.35) * (m.kickA ?? m.kick);
     return look(s);
   };
   return function (t, m) {
@@ -365,7 +356,7 @@ function director(P, V, C = V.plan) {
     const X = c.flash ? 0.35 : (prev && prev.psy && !c.psy ? 4 : 2) * m.p;
     if (prev && t - c.t0 < X && c.t0 > kEnd) s = blend(draw(prev, t, m), s, sm(0, X, t - c.t0));   // never fade out of a chapter the first letter hid
     if (P.kinds.kindle && t < kEnd + 4 * m.p) {   // whenever it starts, one letter lights first, and the set joins on a bar line
-      const kin = BASE(); P.kinds.kindle(kin, m, c, 0, m.life); kin.rise += 0.35 * m.kick; look(kin);
+      const kin = BASE(); P.kinds.kindle(kin, m, c, 0, m.life); kin.rise += 0.35 * (m.kickA ?? m.kick); look(kin);
       const XK = c.psy ? 0.35 : 2 * m.p;
       if (t < kEnd) s = kin;
       else if (t < kEnd + XK) s = blend(kin, s, sm(kEnd, kEnd + XK, t));
@@ -388,7 +379,7 @@ const BIG = 1.85, BT = 1, GML = 2, DLT = 3, HE = 4, YD = 9, NUN = 13, RESH = 19,
 const put = (s, x, y, z, turn, heat = 1, letter = AL, width = 1, core = 1) => s.E.push([x, y, z, turn, heat, letter, width, core]);
 const side = c => c.r[0] < 0.5 ? 1 : -1;
 const psyOn = (s, m, c, e) => {
-  s.psy = 1; s.hue = m.t * 0.12 + m.beatI * 0.09 + c.r[2]; s.expand = 3.2 * m.kick; s.swirl = 0.9 + 0.5 * Math.sin(e * 0.4);
+  s.psy = 1; s.hue = m.t * 0.12 + m.beatI * 0.09 + c.r[2]; s.expand = 3.2 * (m.kickA ?? m.kick); s.swirl = 0.9 + 0.5 * Math.sin(e * 0.4);
   s.cool = 1.9; s.rise = 0.25; s.turb = 0.8;
 };
 const ghosts = (s, m, LT, fl = 1, tw = 0) => m.kicks.forEach(a => { if (a < 0.9) put(s, 0, 0, BIG * (1 + a * 0.9), tw * a, 0.55 * (1 - a / 0.9), LT, fl, 0); });
@@ -447,7 +438,7 @@ const moves = LT => ({
     s.kal = 1; s.seg = [6, 8, 12][Math.floor(c.r[3] * 3)];
   },
   warp(s, m, c, L, e) {   // colour, and its letters flying out of it toward you, one step further on every beat
-    psyOn(s, m, c, e); s.swirl = 0.25; s.expand = 0.9 * m.kick;
+    psyOn(s, m, c, e); s.swirl = 0.25; s.expand = 0.9 * (m.kickA ?? m.kick);
     const d = side(c), N = 12, R = Math.hypot(...m.view), clock = (m.beatI + sm(0, 0.45, m.beatF)) * 0.12;
     put(s, 0, 0, 1.1 * (1 + 0.08 * m.kick), 0.15 * d * Math.sin(e * 0.8), 1, LT);
     for (let k = 0; k < N; k++) {
@@ -457,7 +448,7 @@ const moves = LT => ({
     }
   },
   field(s, m, c, L, e) {   // a lattice of the letter, upside down and right way up, turning over in a wave every bar
-    psyOn(s, m, c, e); s.psy = 0.85; s.expand = 1.2 * m.kick; s.swirl = 0; s.rise = 0.2;
+    psyOn(s, m, c, e); s.psy = 0.85; s.expand = 1.2 * (m.kickA ?? m.kick); s.swirl = 0; s.rise = 0.2;
     const [vx, vy] = m.view, sp = 0.62, cols = Math.max(2, Math.round(2 * vx / sp)), rows = Math.max(2, Math.round(2 * vy / sp));
     for (let i = 0; i < cols; i++) for (let j = 0; j < rows; j++) {
       if (s.E.length >= 20) break;
