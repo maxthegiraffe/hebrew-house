@@ -515,7 +515,8 @@ function qv(v, i, b) { if (i < 0 || i >= v.frames) return 0; const x = v.q[i * 3
 
 // ---------- player ----------
 const LETTERS = ['alef', 'bet', 'gimel', 'dalet', 'heh'];
-const SONGS = [   // single songs, cut from Shevet; the hero starts with the first
+const SONGS = [   // single songs; the hero starts with the first (HaDerech, 100 BPM), then Pera'i and Tof cut from Shevet
+  {id: 'haderech', title: 'HaDerech', he: 'הדרך', tempo: '100 BPM', len: 346, audio: 'https://maxthegiraffe.github.io/grateful-audio/haderech.mp3'},
   {id: 'perai', title: "Pera'i", he: 'פראי', tempo: '125 BPM', len: 242, audio: 'https://maxthegiraffe.github.io/grateful-audio/perai.mp3'},
   {id: 'tof', title: 'Tof', he: 'תוף', tempo: '125 BPM', len: 242, audio: 'https://maxthegiraffe.github.io/grateful-audio/tof.mp3'},
 ];
