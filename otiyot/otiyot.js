@@ -160,6 +160,7 @@ void main() {
   c = mix(c, psy, uPsy * (1. - .8 * body));   // the colour is in the flames; the letters stay white fire, so they always read
   vec2 e = (vUv - uCenter) * asp;
   c *= 1. - .35 * smoothstep(.3, 1.3, dot(e, e));
+  c *= 1. + uKick * (.1 + .15 * uPsy);   // every kick, at once
   c = mix(c, vec3(1.), uFlash);
   c += (fract(sin(dot(vUv * uRes + fract(uT) * 91., vec2(12.9898, 78.233))) * 43758.5453) - .5) * .025;
   o = vec4(c * uFade, 1.);
@@ -244,6 +245,7 @@ function alef18(t, m) {
 // ---------- any set: the music as hebrew.house already measures it (kicks, six bands at 5 fps) ----------
 const lastLE = (arr, t) => { let lo = 0, hi = arr.length; while (lo < hi) { const m = (lo + hi) >> 1; if (arr[m] <= t) lo = m + 1; else hi = m; } return lo - 1; };
 const hashStr = str => { let h = 2166136261; for (const ch of str) h = Math.imul(h ^ ch.charCodeAt(0), 16777619); return h >>> 0; };
+const LEAD = 0.04;   // seconds: the tracker marks a kick's peak, a little after you hear it
 const rng = seed => () => { seed = (seed + 0x6D2B79F5) | 0; let x = Math.imul(seed ^ (seed >>> 15), 1 | seed); x = (x + Math.imul(x ^ (x >>> 7), 61 | x)) ^ x; return ((x ^ (x >>> 14)) >>> 0) / 4294967296; };
 function readViz(v, tempo) {
   const raw = atob(v.bands), q = new Uint8Array(raw.length);
@@ -254,6 +256,15 @@ function readViz(v, tempo) {
   const nf = q.length / 3, fps = v.fps, P = 60 / bpm;
   const at = (j, b) => j < 0 || j >= nf ? 0 : (b & 1 ? q[j * 3 + (b >> 1)] & 15 : q[j * 3 + (b >> 1)] >> 4) / 15;
   const band = (t, b) => { const f = t * fps, i = Math.floor(f), r = f - i; return at(i, b) * (1 - r) + at(i + 1, b) * r; };
+  // the kick that comes back after a break often lands under a crash the tracker can't hear: if the sub is already full
+  // a beat before the first kick it found, that beat is the downbeat
+  for (let i = 1; i < K.length; i++) {
+    if (K[i] - K[i - 1] < 8 * P) continue;
+    const c = K[i] - P; let post = 0;
+    for (let x = 0.2; x < 2; x += 0.2) post += band(K[i] + x, 0) / 9;
+    if (post > 0.3 && band(c + 0.06, 0) >= 0.6 * post && band(c - 0.25, 0) < 0.35 * post && c - K[i - 1] > 4 * P) { K.splice(i, 0, c); i++; }
+  }
+  for (let i = 0; i < K.length; i++) K[i] -= LEAD;   // a touch early, so the fire's answer lands on the kick, not after it
   // the grid: every kick, and through the breaks the same pulse carried on, landing on the kick that comes back
   const G = [], R = [];
   if (K.length) for (let x = K[0] - P; x > 0; x -= P) { G.unshift(x); R.unshift(0); }
