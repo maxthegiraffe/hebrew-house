@@ -865,7 +865,8 @@ function drawOt(dt) {
 }
 // ---------- getting to know the letter: its teachings, one at a time, timed to what the letter is doing ----------
 let WZ = null, wzFor = null, wzSched = [], wzT0 = [], wzCur = null, wzOff = 0, wzIntroL = '', wzIntroT = -99;
-fetch('otiyot/wisdom.json').then(r => r.json()).then(d => { WZ = d; }, () => {});
+const wzLoad = () => fetch('otiyot/wisdom.json', {cache: 'no-cache'}).then(r => r.json()).then(d => { WZ = d; wzFor = null; }, () => {});   // always the newest teachings
+wzLoad();
 const wzEl = $('#wz');
 window.hhDebug = () => ({ot, audio, letter, wz: wzSched});   // for checking the page from a test browser
 const wzDur = it => Math.min(20, Math.max(7, 3 + (it.en.length + it.he.length * 0.5) / 9));   // as long as it takes to read slowly, while watching (Max: longer)
@@ -913,6 +914,7 @@ function hxLabel() {   // a song, or the set and its song
 function setLetter(l) {
   if (!LETTERS.includes(l) || l === letter) return;
   letter = l; store.set('hh-letter', l);
+  if (WZ && !WZ[l]) wzLoad();   // a letter whose teachings came out after this page opened
   document.querySelectorAll('.hx-l').forEach(b => b.setAttribute('aria-checked', b.dataset.l === l));
   otUse(cur.kind ? cur.s : (otSet || SONGS[0]));
 }
