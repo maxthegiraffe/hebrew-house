@@ -35,6 +35,7 @@ function buildAtlas(font) {
     const t = c.measureText(l), L = t.actualBoundingBoxLeft, R = t.actualBoundingBoxRight, A = t.actualBoundingBoxAscent, Dn = t.actualBoundingBoxDescent;
     c.fillText(l, (i % COLS + 0.5) * C - (R - L) / 2, (Math.floor(i / COLS) + 0.5) * C + (A - Dn) / 2);
   });
+  c.beginPath(); c.arc((22 % COLS + 0.5) * C, (Math.floor(22 / COLS) + 0.5) * C, 0.09 * C, 0, 2 * Math.PI); c.fill();   // cell 22: a point (the dagesh of the doubles)
   const a = c.getImageData(0, 0, W, H).data, N = W * H, out = new Float64Array(N), inn = new Float64Array(N);
   for (let i = 0; i < N; i++) {
     const al = a[i * 4 + 3] / 255;
@@ -850,7 +851,229 @@ const SHN = {
     },
   },
 };
-const PROGRAMS = {alef: ALEF, bet: BET, gimel: GIMEL, dalet: DALET, heh: HEH, mem: MEM, shin: SHN};
+// ---------- the doubles (Sefer Yetzirah's seven: bet gimel dalet kaf peh resh tav), each with a hard sound and a soft one ----------
+const KF = 10, PE = 16, DOT = 22;
+// the dagesh, the point that hardens a double: it drops into the letter on the first and third beats and leaves on the second and fourth
+const dagesh = (s, m, LT, hollow, x = 0, y = 0, Z = BIG, turn = 0) => {
+  const hard = m.beatI % 2 === 0, q = m.beatF, w = hard ? sm(0, 0.08, q) * (1 - sm(0.55, 0.95, q)) : 0;
+  const [hx, hy] = R2(hollow[0] * Z, hollow[1] * Z, turn);
+  s.heat += 0.14 * w; s.rise += 0.1 * w;
+  put(s, x, y, Z * (1 + 0.03 * w), turn, 1, LT);
+  if (w > 0.01) put(s, x + hx, y + hy, Z * 0.36 * (0.8 + 0.2 * w), 0, w, DOT, 1, w);
+};
+// write a word out of the letter, right to left, a letter a beat, then gather it back in (W[anchor] is this letter)
+const writeWord = (s, m, c, L, W, anchor) => {
+  const n = W.length, beats = L * 4, B = c.bars * 4, per = c.mood === 'calm' ? 2 : 1;
+  const sz = Math.min(0.85, 2 * m.view[0] * 0.9 / (n * 0.42)), gap = sz * 0.42, x0 = (n - 1) / 2 * gap;
+  const tin = sm(0, 1, beats), tout = sm(B - 4, B - 1, beats);
+  s.heat = 0.8; s.rise = 0.42;
+  W.forEach((LT, k) => {
+    const slot = x0 - k * gap, me = k === anchor, order = k < anchor ? k + 1 : k;
+    const x = me ? slot * tin * (1 - tout) : slot * (1 - 0.8 * tout);
+    const w = me ? 1 : sm(order * per, order * per + 0.8, beats) * (1 - sm(B - 4, B - 2.5, beats));
+    const z = me ? lerp(lerp(BIG, sz, tin), BIG, tout) : sz;
+    if (w > 0.01) put(s, x, 0, z, 0, w, LT, 1, w);
+  });
+};
+// ---------- Kaf · כ: violet fire, the palm, the crown ----------
+const KAF = {
+  calm: ['palm', 'keter', 'dagesh', 'breath'],
+  groove: ['clap', 'keter', 'dagesh', 'palm', 'echo'],
+  psy: ['blessing', 'mandala', 'warp', 'field'],
+  drop: 'blessing',
+  weight: {clap: 2.5, palm: 2, keter: 1.5, dagesh: 1.5},
+  tint: [0.95, 0.72, 1.9],
+  // the kaf as the atlas draws it (hollows.mjs): its ink box, and the middle of its bowl where the dagesh sits
+  box: [-0.1563, -0.2266, 0.1563, 0.2422], hollow: [-0.03, 0.01],
+  kinds: {
+    ...moves(KF),
+    palm(s, m, c, L) {   // tipped back, it is a cupped palm, and a flame rests in it, rising with each breath
+      const br = 0.5 - 0.5 * Math.cos(Math.PI * L), Z = BIG * 0.95, turn = -0.5, y = -0.05 + 0.05 * br;   // tipped back, still a kaf
+      const [hx, hy] = R2(KAF.hollow[0] * Z, KAF.hollow[1] * Z, turn);
+      s.heat = 0.7 + 0.2 * br; s.rise = 0.35 + 0.2 * br; s.cool = 2.9 - 0.6 * br;
+      put(s, 0, y, Z, turn, 1, KF);
+      put(s, hx, y + hy + 0.04 + 0.08 * br, Z * 0.42 * (0.85 + 0.25 * br + 0.1 * m.kick), 0, 0.9, DOT, 1, 0.9);
+    },
+    keter(s, m, c, L) {   // keter, the crown: ten small kafs on a ring over its head, the ring turning a tenth on every beat
+      const F = L / c.bars, g = sm(0, 0.3, F) * (1 - sm(0.88, 1, F)), [vx, vy] = m.view, Z = BIG * (1 - 0.3 * g), y0 = -0.18 * vy * g;
+      const R = Math.min(0.8 * vx, 0.72) * g, top = y0 + KAF.box[3] * Z + 0.34, step = (m.beatI + sm(0, 0.4, m.beatF)) * 2 * Math.PI / 10;
+      put(s, 0, y0, Z, 0, 1, KF);
+      for (let k = 0; k < 10; k++) {
+        const a = step * side(c) + k * 2 * Math.PI / 10, front = 0.5 + 0.5 * Math.sin(a), w = g * (0.45 + 0.55 * front);
+        if (w > 0.01) put(s, R * Math.cos(a), Math.min(vy - 0.15, top + 0.2 * R * Math.sin(a)), 0.22 + 0.12 * front, 0, w, KF, 1, w);
+      }
+    },
+    clap(s, m, c, L) {   // two palms, one the mirror of the other, open to each other and meet on every beat
+      const [vx] = m.view, Z = BIG * 0.6, touch = KAF.box[2] * Z * 1.02, wide = Math.min(0.55 * vx, 0.8);
+      const open = sm(0.04, 0.3, m.beatF) * (1 - sm(0.72, 1, m.beatF)), sep = touch + (wide - touch) * open;   // they touch on the beat and part straight after
+      s.heat = 0.78 + 0.14 * (1 - open); s.rise = 0.4;
+      put(s, -sep, 0, Z, 0, 1, KF, -1);   // the left palm, mirrored, opens to the right
+      put(s, sep, 0, Z, 0, 1, KF);
+    },
+    dagesh(s, m, c, L) {   // a double: the point of fire drops into it on the strong beats (k) and leaves on the weak ones (kh)
+      s.zoom = 1.05; dagesh(s, m, KF, KAF.hollow);
+    },
+    blessing(s, m, c, L, e) {   // colour, and palms open in two rings round it, turning against each other
+      psyOn(s, m, c, e); const d = side(c), [vx, vy] = m.view, R = Math.min(vx, vy);
+      put(s, 0, 0, 1.0 * (1 + 0.08 * m.kick), 0, 1, KF);
+      [[6, 0.5, 0.42, 1], [10, 0.92, 0.32, -1]].forEach(([N, r, z, dir]) => {
+        for (let k = 0; k < N; k++) { const a = d * dir * e * 0.4 + k * 2 * Math.PI / N; put(s, R * r * Math.cos(a), R * r * Math.sin(a), z, a + Math.PI, sm(0, 0.6, e), KF); }
+      });
+    },
+    mandala(s, m, c, L, e) { this.blessing(s, m, c, L, e); s.kal = 1; s.seg = [8, 10][Math.floor(c.r[3] * 2)]; },
+  },
+};
+// ---------- Peh · פ: crimson fire, the mouth, speech ----------
+const PEH = {
+  calm: ['hidden', 'silence', 'dagesh', 'breath'],
+  groove: ['speak', 'hidden', 'dagesh', 'echo', 'coin'],
+  psy: ['voice', 'mandala', 'warp', 'field'],
+  drop: 'voice',
+  weight: {speak: 3, hidden: 2, dagesh: 1.5, silence: 1.5},
+  tint: [1.9, 0.45, 0.5],
+  // the peh as the atlas draws it: ink box; its inner room (where a bet hides) and that room's radius; its mouth on the left
+  box: [-0.1641, -0.2266, 0.1641, 0.2422], hollow: [0.051, 0.02], room: 0.063, mouth: [-0.16, -0.06],
+  kinds: {
+    ...moves(PE),
+    speak(s, m, c, L) {   // it speaks: on every beat a letter of the alef-bet leaves its mouth and drifts away to the left
+      const [vx] = m.view, Z = BIG * 0.8, px = 0.42 * vx, mx = px + PEH.mouth[0] * Z, my = PEH.mouth[1] * Z, open = Math.exp(-m.beatF * 5);
+      s.heat = 0.8 + 0.1 * open; s.wind = [-0.35, 0];
+      put(s, px, 0, Z * (1 + 0.04 * open), 0, 1, PE);
+      for (let j = 0; j < 6; j++) {
+        const a = j + m.beatF, w = sm(0, 0.25, a) * sm(6, 4, a), id = ((m.beatI - j) % 22 + 22) % 22;
+        if (w > 0.01 && m.beatI - j >= 0) put(s, mx - a * 0.3 * vx, my + 0.12 * Math.sin(a * 1.7 + j), 0.3 + 0.08 * a, 0.08 * Math.sin(a * 2.3), w, id, 1, w);
+      }
+    },
+    hidden(s, m, c, L) {   // inside the peh's mouth, its white space is a bet: the camera leans into it and the hidden bet lights
+      const F = L / c.bars, g = sm(0.05, 0.5, F) * (1 - sm(0.82, 1, F)), Z = BIG * (1 + 0.9 * g), [hx, hy] = PEH.hollow;
+      s.heat = 0.75; s.rise = 0.35; s.cool = 2.8;
+      put(s, -hx * Z * g, -hy * Z * g, Z, 0, 1, PE);
+      const zb = Z * PEH.room * 2 * 0.95 / 0.469;   // a bet whose ink fills the room
+      if (g > 0.01) put(s, hx * Z * (1 - g), hy * Z * (1 - g), zb, 0, g, BT, 1, g);
+    },
+    silence(s, m, c, L) {   // silence: the letters it spoke drift back into its mouth, slowly, and its fire goes low
+      const [vx] = m.view, Z = BIG * 0.85, px = 0.3 * vx, mx = px + PEH.mouth[0] * Z, my = PEH.mouth[1] * Z, q = L * 2;
+      s.heat = 0.6; s.rise = 0.3; s.turb = 0.3; s.cool = 3.1;
+      put(s, px, 0, Z, 0, 1, PE);
+      for (let j = 0; j < 5; j++) {
+        const a = 5 - ((q + j) % 5), w = sm(0, 0.5, a) * sm(5, 4, a), id = (j * 5 + Math.floor((q + j) / 5) * 3) % 22;
+        if (w > 0.01) put(s, mx - a * 0.28 * vx, my + 0.1 * Math.sin(a * 1.3 + j), 0.26 + 0.05 * a, 0, 0.7 * w, id, 1, w);
+      }
+    },
+    dagesh(s, m, c, L) {   // a double: the point of fire in its mouth on the strong beats (p) and gone on the weak ones (f)
+      s.zoom = 1.05; dagesh(s, m, PE, PEH.hollow);
+    },
+    voice(s, m, c, L, e) {   // colour, and the whole alef-bet pouring out of its mouth toward you, one step on every beat
+      psyOn(s, m, c, e); s.swirl = 0.25; s.expand = 0.9 * (m.kickA ?? m.kick);
+      const d = side(c), N = 12, R = Math.hypot(...m.view), clock = (m.beatI + sm(0, 0.45, m.beatF)) * 0.12;
+      put(s, 0, 0, 1.1 * (1 + 0.08 * m.kick), 0, 1, PE);
+      for (let k = 0; k < N; k++) {
+        const f = (k / N + clock) % 1, a = k * 2.39996 + d * f * 0.5, r = 0.3 + f * f * R * 1.05, id = (k + Math.floor(k / N + clock) * N) % 22;
+        const w = sm(0, 0.12, f) * sm(1, 0.85, f) * sm(0, 0.6, e);
+        if (w > 0.01) put(s, r * Math.cos(a), r * Math.sin(a), 0.22 + 0.7 * f * f, 0.2 * Math.sin(a), w, id);
+      }
+    },
+    mandala(s, m, c, L, e) { this.voice(s, m, c, L, e); s.kal = 1; s.seg = [8, 12][Math.floor(c.r[3] * 2)]; },
+  },
+};
+// ---------- Resh · ר: dawn fire, the head, the beginning ----------
+const RSH = {
+  calm: ['tip', 'lead', 'rosh', 'breath'],
+  groove: ['tip', 'rosh', 'lead', 'echo', 'ring'],
+  psy: ['rays', 'mandala', 'warp', 'field'],
+  drop: 'rays',
+  weight: {tip: 3, rosh: 2, lead: 1.5},
+  tint: [1.75, 1.0, 0.75],
+  kinds: {
+    ...moves(RESH),
+    tip(s, m, c, L) {   // resh and dalet differ by one small corner: on every bar the corner comes and goes, resh to dalet and back
+      const per = c.mood === 'calm' ? 2 : 1, n = Math.floor(L / per), f = L / per - n, x = sm(0, 0.35, f), dal = n % 2 ? 1 - x : x;
+      const flash = Math.exp(-f * per * 6);
+      s.heat = 0.8 + 0.18 * flash; s.zoom = 1 + 0.04 * flash;
+      put(s, 0, 0, BIG, 0, 1 - dal, RESH, 1, 1 - dal);
+      put(s, 0, 0, BIG, 0, dal, DLT, 1, dal);
+    },
+    lead(s, m, c, L, e) {   // rosh, the head: it leads a line of small reshes along a slow figure of eight, the line following where it has been
+      const [vx, vy] = m.view, sp = c.mood === 'calm' ? 0.35 : 0.5, path = t => [0.62 * vx * Math.sin(t), 0.42 * vy * Math.sin(2 * t)];
+      s.heat = 0.82; s.rise = 0.4;
+      for (let k = 5; k >= 0; k--) {
+        const t = e * sp - k * 0.62, [x, y] = path(t), [x2] = path(t + 0.01), w = k ? (1 - k / 7) * sm(0, 1.2, e - k * 0.8) : 1;
+        if (w > 0.01) put(s, x, y, k ? 0.42 - 0.03 * k : BIG * 0.55, 0, w, RESH, x2 < x ? 1 : -1, k ? w : 1);   // each faces the way it is going
+      }
+    },
+    rosh(s, m, c, L) {   // rosh, head: the word written out of the resh, a letter a beat, right to left, then gathered back
+      writeWord(s, m, c, L, [RESH, AL, SHIN], 0);
+    },
+    rays(s, m, c, L, e) {   // colour, and dawn: reshes stand out from it like rays of a rising sun, turning slowly
+      psyOn(s, m, c, e); const d = side(c), [vx, vy] = m.view, R = Math.hypot(vx, vy);
+      put(s, 0, 0, 1.0 * (1 + 0.08 * m.kick), 0, 1, RESH);
+      for (let ring = 0; ring < 2; ring++) for (let k = 0; k < 12; k++) {
+        const a = d * e * (0.25 - 0.1 * ring) + (k + 0.5 * ring) * 2 * Math.PI / 12, r = R * (0.42 + 0.33 * ring) * (1 + 0.04 * m.kick);
+        put(s, r * Math.cos(a), r * Math.sin(a), 0.3 + 0.12 * ring, a - Math.PI / 2, sm(0, 0.6, e) * (1 - 0.25 * ring), RESH);
+      }
+    },
+    mandala(s, m, c, L, e) { this.rays(s, m, c, L, e); s.kal = 1; s.seg = 12; },
+  },
+};
+// ---------- Tav · ת: ivory fire, the seal, the last letter ----------
+const TAV_ = {
+  calm: ['circle', 'et', 'dagesh', 'breath'],
+  groove: ['seal', 'emet', 'circle', 'dagesh', 'echo'],
+  psy: ['alephbet', 'mandala', 'warp', 'field'],
+  drop: 'alephbet',
+  weight: {seal: 2.5, circle: 2, emet: 2, et: 1.5},
+  tint: [1.45, 1.25, 0.85],
+  box: [-0.1953, -0.2344, 0.1953, 0.2422], hollow: [0.035, -0.012],
+  kinds: {
+    ...moves(TAV),
+    seal(s, m, c, L) {   // a seal: it stamps down on every beat, and each stamp leaves a fading print of itself around it
+      const [vx, vy] = m.view, q = m.beatF, press = Math.exp(-q * 7);
+      s.heat = 0.78 + 0.2 * press; s.zoom = 1 + 0.03 * press;
+      put(s, 0, 0, BIG * (1.08 - 0.08 * sm(0, 0.12, q)), 0, 1, TAV);
+      for (let j = 1; j <= 5; j++) {
+        const b = m.beatI - j; if (b < 0) continue;
+        const h1 = Math.sin(b * 91.7) * 0.5 + 0.5, h2 = Math.sin(b * 37.3) * 0.5 + 0.5, a = j - 1 + q, w = 0.6 * sm(5, 2, a);
+        const x = (h1 * 2 - 1) * 0.8 * vx, y = (h2 * 2 - 1) * 0.7 * vy;
+        if (w > 0.01 && Math.hypot(x, y) > 0.55) put(s, x, y, 0.34, (h1 - 0.5) * 0.6, w, TAV, 1, w);
+      }
+    },
+    emet(s, m, c, L) {   // emet, truth: aleph, mem, tav, the first letter, the middle one and the last, written out of the tav
+      writeWord(s, m, c, L, [AL, MM, TAV], 2);
+    },
+    et(s, m, c, L, e) {   // את: aleph on the right, tav on the left, and every letter between them flowing from the one to the other
+      const [vx] = m.view, xa = 0.62 * vx, xt = -0.62 * vx, Z = Math.min(BIG * 0.6, 0.5 * vx);
+      s.heat = 0.8; s.rise = 0.4;
+      put(s, xa, 0, Z, 0, 1, AL); put(s, xt, 0, Z, 0, 1, TAV);
+      for (let j = 0; j < 6; j++) {
+        const u = ((m.beatI + m.beatF) / 6 + j / 6) % 1, id = 1 + ((m.beatI + j * 3) % 20 + 20) % 20, x = lerp(xa - 0.25, xt + 0.25, u);
+        const w = sm(0, 0.12, u) * sm(1, 0.88, u);
+        if (w > 0.01) put(s, x, 0.16 * Math.sin(Math.PI * u) * (j % 2 ? 1 : -1), 0.32, 0, w, id, 1, w);
+      }
+    },
+    circle(s, m, c, L) {   // the alef-bet in a ring round it, tav beside aleph: the end is joined to the beginning
+      const [vx, vy] = m.view, F = L / c.bars, g = sm(0, 0.3, F) * (1 - sm(0.88, 1, F)), R = Math.min(vx, vy) * 0.82 * g, rot = side(c) * 0.06 * L;
+      const Z = BIG * (1 - 0.45 * g), glow = Math.exp(-m.beatF * 4);
+      put(s, 0, 0, Z, 0, 1, TAV);
+      for (let k = 0; k < 22; k++) {   // aleph at the top, the letters running right to left round the ring, so tav comes back beside it
+        const a = Math.PI / 2 - rot + k * 2 * Math.PI / 22, pair = k === 0 || k === 21, w = g * (pair ? 0.85 + 0.15 * glow : 0.6);
+        if (w > 0.01) put(s, R * Math.cos(a) * (vx > vy ? 1.25 : 1), R * Math.sin(a), pair ? 0.3 : 0.22, 0, w, k, 1, w);
+      }
+    },
+    dagesh(s, m, c, L) {   // a double: the point of fire between its legs on the strong beats (t) and gone on the weak ones (th)
+      s.zoom = 1.05; dagesh(s, m, TAV, TAV_.hollow);
+    },
+    alephbet(s, m, c, L, e) {   // colour, and the whole alef-bet spiralling in to the tav, the last letter, where it all ends
+      psyOn(s, m, c, e); const d = side(c);
+      put(s, 0, 0, 1.0 * (1 + 0.08 * m.kick), 0, 1, TAV);
+      for (let arm = 0; arm < 2; arm++) for (let k = 0; k < 11; k++) {
+        const f = 1 - (k + (e * 0.5) % 1) / 11, r = 0.45 + 1.35 * f * f, a = d * (arm * Math.PI + f * 5.2 - e * 0.9), id = arm * 11 + k;
+        put(s, r * Math.cos(a), r * Math.sin(a), 0.14 + 0.44 * f, a + Math.PI / 2, sm(0, 0.15, f) * sm(1, 0.85, f) * sm(0, 0.6, e), id);
+      }
+    },
+    mandala(s, m, c, L, e) { this.alephbet(s, m, c, L, e); s.kal = 1; s.seg = [8, 11][Math.floor(c.r[3] * 2)]; },
+  },
+};
+const PROGRAMS = {alef: ALEF, bet: BET, gimel: GIMEL, dalet: DALET, heh: HEH, kaf: KAF, mem: MEM, peh: PEH, resh: RSH, shin: SHN, tav: TAV_};
 
 function create(canvas, opts = {}) {
   const font = opts.font || '"Frank Ruhl Libre", "Times New Roman", serif';

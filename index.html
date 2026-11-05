@@ -139,11 +139,15 @@ html.clear .hx{bottom:calc(20px + env(safe-area-inset-bottom))}
 html:not(.lit):not(.clear) .wz{display:none}
 @media (prefers-reduced-motion:reduce){.wz{transition:opacity .5s ease;transform:translate(-50%,0)}}
 html.clear.still .hx{opacity:0}
-@media (max-width:640px){   /* a phone: the song on top, the five letters in a row under it */
+@media (max-width:820px){   /* a phone or a narrow window: the song on top, the letters in their own row under it */
   .hx{flex-wrap:wrap;justify-content:center;border-radius:24px;row-gap:2px;width:max-content}
   .hx-now{width:clamp(150px,52vw,240px)}
   #clearbtn{order:1}
-  .hx-let{order:2;flex-basis:100%;justify-content:center;border-left:0;border-top:1px solid var(--faint);padding:5px 0 0}
+  .hx-let{order:2;flex-basis:100%;justify-content:flex-start;border-left:0;border-top:1px solid var(--faint);padding:5px 0 0;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .hx-let::-webkit-scrollbar{display:none}
+  .hx-l{flex:none;width:34px;height:34px;font-size:18px}
+  .hx-l:first-child{margin-left:auto} .hx-l:last-child{margin-right:auto}   /* centred when they fit, a swipe when they don't */
+  .hx-let.more{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 34px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 34px),transparent)}   /* more letters past the edge */
 }
 html.clear,html.clear body{overflow:hidden}
 html.clear .hero{position:fixed;inset:0;z-index:70;height:100%;min-height:0;background:#000}
@@ -354,8 +358,12 @@ footer{padding:clamp(60px,12vh,140px) clamp(16px,6vw,96px) calc(140px + env(safe
         <button class="hx-l" data-l="gimel" role="radio" aria-checked="false" aria-label="Gimel" lang="he">ג</button>
         <button class="hx-l" data-l="dalet" role="radio" aria-checked="false" aria-label="Dalet" lang="he">ד</button>
         <button class="hx-l" data-l="heh" role="radio" aria-checked="false" aria-label="Heh" lang="he">ה</button>
+        <button class="hx-l" data-l="kaf" role="radio" aria-checked="false" aria-label="Kaf" lang="he">כ</button>
         <button class="hx-l" data-l="mem" role="radio" aria-checked="false" aria-label="Mem" lang="he">מ</button>
+        <button class="hx-l" data-l="peh" role="radio" aria-checked="false" aria-label="Peh" lang="he">פ</button>
+        <button class="hx-l" data-l="resh" role="radio" aria-checked="false" aria-label="Resh" lang="he">ר</button>
         <button class="hx-l" data-l="shin" role="radio" aria-checked="false" aria-label="Shin" lang="he">ש</button>
+        <button class="hx-l" data-l="tav" role="radio" aria-checked="false" aria-label="Tav" lang="he">ת</button>
       </div>
       <button class="pv-tool" id="clearbtn" aria-label="Full screen" title="Just the letter, full screen"><svg viewBox="0 0 16 16"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4"/></svg></button>
     </div>
@@ -531,7 +539,7 @@ const bands = new Float32Array(6);
 function qv(v, i, b) { if (i < 0 || i >= v.frames) return 0; const x = v.q[i * 3 + (b >> 1)]; return (b & 1 ? x & 15 : x >> 4) / 15; }
 
 // ---------- player ----------
-const LETTERS = ['alef', 'bet', 'gimel', 'dalet', 'heh', 'mem', 'shin'];
+const LETTERS = ['alef', 'bet', 'gimel', 'dalet', 'heh', 'kaf', 'mem', 'peh', 'resh', 'shin', 'tav'];
 const SONGS = [   // single songs; the hero starts with the first. The 100 BPM three each bring their mother letter: aleph, mem, shin
   {id: 'haderech', title: 'HaDerech', he: 'הדרך', tempo: '100 BPM', len: 346, letter: 'alef', audio: 'https://maxthegiraffe.github.io/grateful-audio/haderech.mp3'},
   {id: 'maamakim', title: "Ma'amakim", he: 'ממעמקים', tempo: '100 BPM', len: 384, letter: 'mem', audio: 'https://maxthegiraffe.github.io/grateful-audio/maamakim.mp3'},
@@ -914,6 +922,8 @@ $('#hxnext').addEventListener('click', () => step(1));
 $('#hxset').addEventListener('click', () => cur.kind === 'set' && cur.i + 1 >= SETS.length ? playSong(0, 0) : playSet(cur.kind === 'set' ? cur.i + 1 : 0, null));   // songs, then each set, then back to the songs
 hxLabel();
 addEventListener('resize', placeOt);
+const hxLet = $('.hx-let'), hxMore = () => hxLet.classList.toggle('more', hxLet.scrollLeft + hxLet.clientWidth < hxLet.scrollWidth - 2);
+hxLet.addEventListener('scroll', hxMore, {passive: true}); addEventListener('resize', hxMore); setTimeout(hxMore, 300);
 let stillT = 0;
 function wake() { html.classList.remove('still'); clearTimeout(stillT); stillT = setTimeout(() => html.classList.add('still'), 2600); }
 function setClear(on) {   // clear view: just the letter, full screen, no words of the page

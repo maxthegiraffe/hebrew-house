@@ -87,6 +87,290 @@
    }
   ]
  },
+ "bet": {
+  "name": "Bet",
+  "intro": {
+   "he": "בֵּית",
+   "en": "Bet. The second letter, the number two, the house: the Torah opens with it.",
+   "src": "Genesis 1:1"
+  },
+  "lines": [
+   {
+    "k": "house",
+    "he": "סָתוּם מִכָּל צְדָדָיו וּפָתוּחַ מִלְּפָנָיו",
+    "en": "Why does the Torah begin with bet? It is closed on three sides and open only forward: do not ask what is above or behind, begin from here.",
+    "src": "Bereshit Rabbah 1:10"
+   },
+   {
+    "k": "bereshit",
+    "he": "בְּרֵאשִׁית בָּרָא",
+    "en": "In the beginning: the first word of the Torah opens with a bet, not an aleph.",
+    "src": "Genesis 1:1"
+   },
+   {
+    "k": "twins",
+    "he": "לְשׁוֹן בְּרָכָה",
+    "en": "The world opens with bet because bet is the language of blessing, berakhah.",
+    "src": "Bereshit Rabbah 1:10"
+   },
+   {
+    "k": "twins",
+    "he": "טוֹבִים הַשְּׁנַיִם מִן הָאֶחָד",
+    "en": "Bet is two. Two are better than one: if one falls, the other lifts them up.",
+    "src": "Ecclesiastes 4:9-10"
+   },
+   {
+    "k": "door",
+    "he": "בְּחָכְמָה יִבָּנֶה בָּיִת",
+    "en": "With wisdom a house is built, and with understanding it stands.",
+    "src": "Proverbs 24:3"
+   },
+   {
+    "k": "*",
+    "he": "וְשָׁכַנְתִּי בְּתוֹכָם",
+    "en": "Make Me a sanctuary, and I will dwell among them.",
+    "src": "Exodus 25:8"
+   },
+   {
+    "k": "door",
+    "he": "אֵיפֹה גָּר אֱלֹהִים",
+    "en": "Where does God live? Wherever we let God in.",
+    "src": "The Kotzker Rebbe"
+   },
+   {
+    "k": "breath",
+    "he": "בַּיִת",
+    "en": "Bet is bayit, a house: a roof, a floor and a back wall, with the front left open for whoever comes.",
+    "src": "The form of the letter"
+   }
+  ]
+ },
+ "gimel": {
+  "name": "Gimel",
+  "intro": {
+   "he": "גִּימֶל",
+   "en": "Gimel. The third letter, the number three: gamal, the camel, and gomel, the one who gives.",
+   "src": "The name of the letter"
+  },
+  "lines": [
+   {
+    "k": "run",
+    "he": "גִּימֶ״ל דָּלֶ״ת: גְּמוֹל דַּלִּים",
+    "en": "Gimel, dalet: gemol dalim, be kind to the poor.",
+    "src": "Shabbat 104a"
+   },
+   {
+    "k": "run",
+    "he": "דַּרְכּוֹ שֶׁל גּוֹמֵל חֲסָדִים לִרְדּוֹף אַחַר דַּלִּים",
+    "en": "Why does the gimel's foot reach toward the dalet? It is the way of the kind to run after those in need.",
+    "src": "Shabbat 104a"
+   },
+   {
+    "k": "three",
+    "he": "עַל שְׁלֹשָׁה דְבָרִים הָעוֹלָם עוֹמֵד",
+    "en": "The world stands on three things: Torah, prayer and acts of kindness.",
+    "src": "Pirkei Avot 1:2"
+   },
+   {
+    "k": "three",
+    "he": "וְהַחוּט הַמְשֻׁלָּשׁ לֹא בִמְהֵרָה יִנָּתֵק",
+    "en": "A cord of three strands is not quickly broken.",
+    "src": "Ecclesiastes 4:12"
+   },
+   {
+    "k": "caravan",
+    "he": "גָּמָל",
+    "en": "Gimel is the camel, carrying water and bread across the desert to whoever is waiting at the other side.",
+    "src": "The name of the letter"
+   },
+   {
+    "k": "dreidel",
+    "he": "נֵס גָּדוֹל הָיָה שָׁם",
+    "en": "On the dreidel, gimel stands for gadol: a great miracle happened there.",
+    "src": "The Chanukah dreidel"
+   },
+   {
+    "k": "*",
+    "he": "עוֹלָם חֶסֶד יִבָּנֶה",
+    "en": "The world is built on kindness.",
+    "src": "Psalm 89:3"
+   },
+   {
+    "k": "whirl",
+    "he": "גְּמִילוּת חֲסָדִים",
+    "en": "Kindness is greater than charity: it gives with your body, not only your money, to the rich and the poor, the living and the dead.",
+    "src": "Sukkah 49b"
+   }
+  ]
+ },
+ "dalet": {
+  "name": "Dalet",
+  "intro": {
+   "he": "דָּלֶת",
+   "en": "Dalet. The fourth letter, the number four: delet, a door, and dal, the one who has little.",
+   "src": "The name of the letter"
+  },
+  "lines": [
+   {
+    "k": "receive",
+    "he": "דְּלִימְצֵי לֵיהּ נַפְשֵׁיהּ",
+    "en": "Why does the dalet's foot reach back toward the gimel? So the one in need is easy to find.",
+    "src": "Shabbat 104a"
+   },
+   {
+    "k": "receive",
+    "he": "דְּלִיתֵּן לֵיהּ בְּצִנְעָה",
+    "en": "And why does the dalet turn its face away? So the gift is given in secret, and no one is shamed.",
+    "src": "Shabbat 104a"
+   },
+   {
+    "k": "four",
+    "he": "מֵאַרְבַּע כַּנְפוֹת הָאָרֶץ",
+    "en": "From the four corners of the earth.",
+    "src": "Isaiah 11:12"
+   },
+   {
+    "k": "steps",
+    "he": "פִּתְחוּ לִי פֶּתַח כְּחֻדּוֹ שֶׁל מַחַט",
+    "en": "Open for Me a door as small as the eye of a needle, and I will open for you a door wide enough for wagons.",
+    "src": "Shir HaShirim Rabbah 5:2"
+   },
+   {
+    "k": "bow",
+    "he": "לֵב נִשְׁבָּר וְנִדְכֶּה",
+    "en": "A broken and humbled heart, God will not turn away.",
+    "src": "Psalm 51:19"
+   },
+   {
+    "k": "*",
+    "he": "שְׂאוּ שְׁעָרִים רָאשֵׁיכֶם",
+    "en": "Lift up your heads, O gates, and let the King of glory come in.",
+    "src": "Psalm 24:7"
+   },
+   {
+    "k": "compass",
+    "he": "פִּתְחוּ לִי שַׁעֲרֵי צֶדֶק",
+    "en": "Open for me the gates of justice; I will go in and give thanks.",
+    "src": "Psalm 118:19"
+   },
+   {
+    "k": "breath",
+    "he": "דַּל",
+    "en": "Dalet bends at the top like someone bowing: humility is the door a blessing comes through.",
+    "src": "The form of the letter"
+   }
+  ]
+ },
+ "heh": {
+  "name": "Heh",
+  "intro": {
+   "he": "הֵא",
+   "en": "Heh. The fifth letter, the number five, the sound of breath leaving the body.",
+   "src": "The voice of the letter"
+  },
+  "lines": [
+   {
+    "k": "exhale",
+    "he": "בְּהִבָּרְאָם: בְּה׳ בְּרָאָם",
+    "en": "When they were created, be-hibar'am, can be read be-heh bera'am: with heh He created them.",
+    "src": "Menachot 29b, on Genesis 2:4"
+   },
+   {
+    "k": "exhale",
+    "he": "כָּל הָאוֹתִיּוֹת תּוֹפְסוֹת אֶת הַלָּשׁוֹן",
+    "en": "Every letter takes hold of the tongue except heh. So the world was made with no toil, only a breath.",
+    "src": "Bereshit Rabbah 12:10"
+   },
+   {
+    "k": "leg",
+    "he": "כָּל הָרוֹצֶה לָצֵאת יֵצֵא",
+    "en": "Why is the world shaped like a heh? It is open below: whoever wants to leave may leave.",
+    "src": "Menachot 29b"
+   },
+   {
+    "k": "leg",
+    "he": "אִי הָדַר בִּתְשׁוּבָה",
+    "en": "And why does its leg hang free, leaving a gap above? So whoever turns back can come in again, from above.",
+    "src": "Menachot 29b"
+   },
+   {
+    "k": "five",
+    "he": "וְהָיָה שִׁמְךָ אַבְרָהָם",
+    "en": "God added a heh to Abram and to Sarai, and they became Abraham and Sarah.",
+    "src": "Genesis 17:5, 17:15"
+   },
+   {
+    "k": "bloom",
+    "he": "כֹּל הַנְּשָׁמָה תְּהַלֵּל יָהּ",
+    "en": "Let every breath praise God.",
+    "src": "Psalm 150:6"
+   },
+   {
+    "k": "*",
+    "he": "נִשְׁמַת כָּל חַי",
+    "en": "The breath of every living thing blesses Your name.",
+    "src": "Nishmat, the Shabbat morning prayer"
+   }
+  ]
+ },
+ "kaf": {
+  "name": "Kaf",
+  "intro": {
+   "he": "כַּף",
+   "en": "Kaf. The eleventh letter, the number twenty: kaf, the palm of the hand.",
+   "src": "One of the seven double letters"
+  },
+  "lines": [
+   {
+    "k": "palm",
+    "he": "כַּף",
+    "en": "Kaf is the palm: open to give, cupped to receive. The same hand does both.",
+    "src": "The name of the letter"
+   },
+   {
+    "k": "keter",
+    "he": "כֶּתֶר",
+    "en": "Kaf begins keter, the crown: the highest of the ten sefirot, above even wisdom.",
+    "src": "Kabbalah, the ten sefirot"
+   },
+   {
+    "k": "keter",
+    "he": "שְׁלֹשָׁה כְתָרִים",
+    "en": "Three crowns: of Torah, of priesthood, of kingship. The crown of a good name rises above them all.",
+    "src": "Pirkei Avot 4:13"
+   },
+   {
+    "k": "clap",
+    "he": "תִּקְעוּ כָף",
+    "en": "All you peoples, clap your hands, tik’u chaf. Shout to God with a voice of joy.",
+    "src": "Psalm 47:2"
+   },
+   {
+    "k": "blessing",
+    "he": "נְשִׂיאַת כַּפַּיִם",
+    "en": "Nesiat kapayim, the lifting of the palms: the priests raise both hands to bless the people.",
+    "src": "Numbers 6:24 · the priestly blessing"
+   },
+   {
+    "k": "dagesh",
+    "he": "כּ · כ",
+    "en": "Kaf is a double: with a point inside it is k, without it kh. A strong sound and a gentle one.",
+    "src": "Sefer Yetzirah 4:1"
+   },
+   {
+    "k": "*",
+    "he": "כ · ך",
+    "en": "The bent kaf and the straight one at a word’s end: one who bows in this world will stand upright in the next.",
+    "src": "Talmud, Shabbat 104a"
+   },
+   {
+    "k": "*",
+    "he": "כְּ",
+    "en": "As a prefix, kaf means like. It is the letter of likeness.",
+    "src": "The letter as a word"
+   }
+  ]
+ },
  "mem": {
   "name": "Mem",
   "intro": {
@@ -154,6 +438,116 @@
     "he": "שָׁמַיִם · אֵשׁ וּמַיִם",
     "en": "Shamayim, the heavens, were made of fire and water mixed together: esh and mayim, shin and mem.",
     "src": "Chagigah 12a"
+   }
+  ]
+ },
+ "peh": {
+  "name": "Peh",
+  "intro": {
+   "he": "פֵּה",
+   "en": "Peh. The seventeenth letter, the number eighty: peh, the mouth.",
+   "src": "One of the seven double letters"
+  },
+  "lines": [
+   {
+    "k": "speak",
+    "he": "רוּחַ מְמַלְּלָא",
+    "en": "Peh is the mouth. Where the Torah says a living soul, the old translation says a speaking spirit.",
+    "src": "Genesis 2:7 · Targum Onkelos"
+   },
+   {
+    "k": "speak",
+    "he": "פֶּסַח · פֶּה סָח",
+    "en": "Pesach is peh sach, the mouth speaks: the exodus freed the voice of a people who could not speak.",
+    "src": "The Arizal"
+   },
+   {
+    "k": "hidden",
+    "he": "ב",
+    "en": "Look into the peh: the white space in its mouth is the shape of a bet, the first letter of the Torah, hidden in speech.",
+    "src": "The form of the letter"
+   },
+   {
+    "k": "silence",
+    "he": "סְיָג לַחָכְמָה שְׁתִיקָה",
+    "en": "Silence is a fence around wisdom.",
+    "src": "Pirkei Avot 3:13"
+   },
+   {
+    "k": "silence",
+    "he": "פ · ף",
+    "en": "The open peh and the closed one: a time to keep silent and a time to speak.",
+    "src": "Ecclesiastes 3:7"
+   },
+   {
+    "k": "dagesh",
+    "he": "פּ · פ",
+    "en": "Peh is a double: with a point inside it is p, without it f. Hard and soft, the same mouth.",
+    "src": "Sefer Yetzirah 4:1"
+   },
+   {
+    "k": "voice",
+    "he": "מָוֶת וְחַיִּים בְּיַד לָשׁוֹן",
+    "en": "Death and life are in the power of the tongue.",
+    "src": "Proverbs 18:21"
+   },
+   {
+    "k": "*",
+    "he": "בֶּן שְׁמוֹנִים לִגְבוּרָה",
+    "en": "Peh is eighty, and eighty is the age of gevurah, strength.",
+    "src": "Pirkei Avot 5:21"
+   }
+  ]
+ },
+ "resh": {
+  "name": "Resh",
+  "intro": {
+   "he": "רֵישׁ",
+   "en": "Resh. The twentieth letter, the number two hundred: rosh, the head, and reshit, the beginning.",
+   "src": "One of the seven double letters"
+  },
+  "lines": [
+   {
+    "k": "tip",
+    "he": "אֶחָד · אַחֵר",
+    "en": "Dalet and resh differ by one small corner. In the Shema the dalet of echad, one, is written large, so it is never read as acher, another.",
+    "src": "Deuteronomy 6:4, in the Torah scroll"
+   },
+   {
+    "k": "tip",
+    "he": "ד · ר",
+    "en": "The corner that makes a dalet is a yod. Without that point, the same shape is a resh.",
+    "src": "The form of the letter"
+   },
+   {
+    "k": "lead",
+    "he": "רֹאשׁ",
+    "en": "Resh is rosh, the head: what leads, and what the rest follows.",
+    "src": "The name of the letter"
+   },
+   {
+    "k": "rosh",
+    "he": "רֵאשִׁית",
+    "en": "Bereshit, in the beginning, carries reshit inside it: the beginning, the head, the first.",
+    "src": "Genesis 1:1"
+   },
+   {
+    "k": "rays",
+    "he": "רֵאשִׁית",
+    "en": "Rashi reads in the beginning as for the sake of the beginning: the Torah and Israel, both called reshit.",
+    "src": "Rashi on Genesis 1:1"
+   },
+   {
+    "k": "*",
+    "he": "ק · ר",
+    "en": "Kuf and resh: kadosh and rasha, holy and wicked. The kuf turns its face away, yet leaves its leg open for the one who comes back.",
+    "src": "Talmud, Shabbat 104a"
+   },
+   {
+    "k": "*",
+    "he": "ר",
+    "en": "Resh is counted among the seven doubles, though few still say its second sound.",
+    "src": "Sefer Yetzirah 4:1"
    }
   ]
  },
@@ -230,6 +624,58 @@
     "he": "שְׁמַע · שַׁבָּת · שָׁלוֹם",
     "en": "Shema, Shabbat, shalom: the words at the heart of a Jewish day all begin with shin.",
     "src": "The play of the letters"
+   }
+  ]
+ },
+ "tav": {
+  "name": "Tav",
+  "intro": {
+   "he": "תָּו",
+   "en": "Tav. The last letter, the number four hundred: a mark, a sign, a seal.",
+   "src": "The last of the seven double letters"
+  },
+  "lines": [
+   {
+    "k": "seal",
+    "he": "חוֹתָמוֹ אֱמֶת",
+    "en": "The seal of the Holy One is emet, truth.",
+    "src": "Talmud, Shabbat 55a"
+   },
+   {
+    "k": "seal",
+    "he": "תָּו",
+    "en": "Tav means a mark. Ezekiel saw a tav set on the foreheads of those who grieved for the city.",
+    "src": "Ezekiel 9:4"
+   },
+   {
+    "k": "emet",
+    "he": "אֱמֶת",
+    "en": "Emet, truth: aleph the first letter, mem the middle, tav the last. Truth holds from beginning to end.",
+    "src": "Jerusalem Talmud, Sanhedrin 1:1"
+   },
+   {
+    "k": "et",
+    "he": "אֵת",
+    "en": "The Torah’s first sentence holds a word that is only aleph and tav: et. The mystics read it as every letter, first to last.",
+    "src": "Genesis 1:1"
+   },
+   {
+    "k": "circle",
+    "he": "נָעוּץ סוֹפָן בִּתְחִלָּתָן",
+    "en": "Their end is wedged in their beginning, and their beginning in their end.",
+    "src": "Sefer Yetzirah 1:7"
+   },
+   {
+    "k": "dagesh",
+    "he": "תּ · ת",
+    "en": "Tav is the last double: t with the point inside, th without. Some communities still say the soft tav.",
+    "src": "Sefer Yetzirah 4:1"
+   },
+   {
+    "k": "alephbet",
+    "he": "ת׳",
+    "en": "Tav is four hundred, the largest number a single letter carries: the count of the alef-bet ends here.",
+    "src": "Gematria"
    }
   ]
  }
